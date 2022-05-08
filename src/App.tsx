@@ -2,14 +2,12 @@ import { useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import { Appwrite } from "appwrite";
+import { config } from "./Config/config";
 
 function App() {
   const appwrite = new Appwrite();
 
-  const endpoint = import.meta.env.VITE_APPWRITE_API_ENDPOINT;
-  const project = import.meta.env.VITE_APPWRITE_PROJECT;
-
-  appwrite.setEndpoint(endpoint).setProject(project);
+  appwrite.setEndpoint(config.awEndpoint).setProject(config.awProject);
 
   const [count, setCount] = useState(0);
 
