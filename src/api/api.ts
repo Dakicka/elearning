@@ -1,11 +1,20 @@
 
 import { Appwrite } from "appwrite";
+import { User } from "../models/User";
 import { appwriteServer } from "../utils/config";
 
 interface API {
     sdk: Appwrite | null;
     provider(): Appwrite
-    getUser() : Promise<any>
+    createAccount(
+        email: string,
+        password: string,
+        name: string
+    ): Promise<any>
+    getAccount() : Promise<any>
+    createSession(email: string,
+        password: string): Promise<any>
+    deleteCurrentSession(): Promise<any>
 }
 
 const api: API = {
@@ -20,8 +29,18 @@ const api: API = {
         api.sdk = appwrite;
         return appwrite;
     },
-    getUser: () => {
+    createAccount: (email, password, name) => {
+        return api.provider().account.create("unique()", email, password, name);
+    },
+    getAccount: () => {
         return api.provider().account.get();
+    },
+    createSession: (email, password) => {
+        return api.provider().account.createSession(email, password)
+    },
+    deleteCurrentSession: () => {
+        return api.provider().account.deleteSession("current")
     }
-
 }
+
+export default api
