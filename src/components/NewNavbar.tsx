@@ -1,13 +1,15 @@
 import { ReactNode, useEffect, useState } from "react";
 import { MdSchool } from "react-icons/md";
-import { Link, NavLink } from "react-router-dom";
+import { Link, Navigate, NavLink } from "react-router-dom";
 import { api, AppwriteProfile } from "../api/api";
 import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function NewNavbar() {
   const { user, logout } = useAuth();
   const [profile, setProfile] = useState<AppwriteProfile>(null!);
   const [avatar, setAvatar] = useState<string>("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user?.$id) {
@@ -20,7 +22,10 @@ function NewNavbar() {
       api.getUserAvatar(profile.avatarId).then((res) => setAvatar(res));
     }
   }, [profile]);
-
+  const onLogout = () => {
+    logout();
+    navigate("/");
+  };
   const Logo = () => (
     <div>
       <Link to="/" className="flex items-center py-5 px-2 text-gray-400">
@@ -75,7 +80,7 @@ function NewNavbar() {
                     <a>Einstellungen</a>
                   </li>
                   <li>
-                    <a onClick={logout}>Logout</a>
+                    <a onClick={onLogout}>Logout</a>
                   </li>
                 </ul>
               </div>{" "}
