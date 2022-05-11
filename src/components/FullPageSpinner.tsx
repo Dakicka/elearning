@@ -1,14 +1,14 @@
-import React from "react"
-import { SpinnerGreenLarge } from "./Spinner"
+import React from "react";
+import { SpinnerPrimaryLarge } from "./Spinner";
 
 function FullPageSpinner() {
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col justify-center">
       <div className="max-w-md mx-auto">
-        <SpinnerGreenLarge />
+        <SpinnerPrimaryLarge />
       </div>
     </div>
-  )
+  );
 }
 
-export default FullPageSpinner
+export default FullPageSpinner;

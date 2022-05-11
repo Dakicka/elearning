@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import api from "../api/api";
+import { MdSchool } from "react-icons/md";
 import { useAuth } from "../contexts/AuthContext";
 
 function Navbar() {
@@ -54,8 +54,8 @@ function Navbar() {
     to: string;
     children: ReactNode;
   }> = ({ children, to }) => {
-    const activeClassNames = "py-5 px-3 text-green-600 hover:text-green-600";
-    const inActiveClassNames = "py-5 px-3 text-gray-200 hover:text-green-600";
+    const activeClassNames = "py-5 px-3 text-white hover:text-secondary";
+    const inActiveClassNames = "py-5 px-3 text-gray-200 hover:text-secondary";
     return (
       <NavLink
         to={to}
@@ -71,21 +71,8 @@ function Navbar() {
   const Logo = () => (
     <div>
       <Link to="/" className="flex items-center py-5 px-2 text-gray-400">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6 mr-1 text-green-600"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <span className="font-bold text-green-600">Life Hackers</span>
+        <MdSchool color="#3838F5" className="mr-4" size={25} />
+        <span className="font-bold text-primary">Life Hackers</span>
       </Link>
     </div>
   );
@@ -105,12 +92,8 @@ function Navbar() {
               {/* primary nav */}
               {user && (
                 <div className="hidden md:flex items-center space-x-1 ">
-                  <NavigationMenuItem to="/transactions">
-                    Transactions
-                  </NavigationMenuItem>
-                  <NavigationMenuItem to="/tradehistory">
-                    Trade History
-                  </NavigationMenuItem>
+                  <NavigationMenuItem to="/profile">Profil</NavigationMenuItem>
+                  <NavigationMenuItem to="/classes">Kurse</NavigationMenuItem>
                 </div>
               )}
             </div>
@@ -123,7 +106,7 @@ function Navbar() {
                   {/* TODO: Abstract into button component */}
                   <Link
                     to="/signup"
-                    className="py-2 px-3 bg-primary text-black font-bold rounded hover:bg-green-600 transition duration-300"
+                    className="py-2 px-3 bg-primary text-black font-bold rounded hover:bg-secondary transition duration-300"
                   >
                     Signup
                   </Link>
@@ -133,7 +116,7 @@ function Navbar() {
                   <div className="text-white">Hi, {user.name} </div>
                   <button
                     onClick={() => onLogout()}
-                    className="px-3 bg-primary text-black font-bold rounded hover:bg-green-600 transition duration-300 h-8"
+                    className="px-3 bg-primary text-black font-bold rounded hover:bg-secondary transition duration-300 h-8"
                   >
                     Logout
                   </button>
@@ -171,7 +154,7 @@ function Navbar() {
             {user ? (
               <button
                 onClick={() => onLogout()}
-                className="px-3 bg-primary text-black font-bold rounded hover:bg-green-600 transition duration-300 my-3"
+                className="px-3 bg-primary text-black font-bold rounded hover:bg-secondary transition duration-300 my-3"
               >
                 Logout
               </button>
@@ -179,13 +162,13 @@ function Navbar() {
               <div className="flex flex-col p-3">
                 <NavLink
                   to="/login"
-                  className="py-2 my-2 px-3 w-full bg-primary text-black font-bold rounded hover:bg-green-600 transition duration-300"
+                  className="py-2 my-2 px-3 w-full bg-primary text-black font-bold rounded hover:bg-secondary transition duration-300"
                 >
                   Login
                 </NavLink>
                 <Link
                   to="/signup"
-                  className="py-2  my-2 px-3 w-full bg-primary text-black font-bold rounded hover:bg-green-600 transition duration-300"
+                  className="py-2  my-2 px-3 w-full bg-primary text-black font-bold rounded hover:bg-secondary transition duration-300"
                 >
                   Signup
                 </Link>

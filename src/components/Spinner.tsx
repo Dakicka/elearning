@@ -1,8 +1,8 @@
-export function SpinnerGreenLarge() {
+export function SpinnerPrimaryLarge() {
   return (
     <svg
       role="status"
-      className="mr-2 w-40 h-40 text-gray-200 animate-spin dark:text-black fill-green-600"
+      className="mr-2 w-40 h-40 text-gray-200 animate-spin dark:text-black fill-primary"
       viewBox="0 0 100 101"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -16,14 +16,14 @@ export function SpinnerGreenLarge() {
         fill="currentFill"
       />
     </svg>
-  )
+  );
 }
 export function SpinnerGreenSmall() {
   return (
     <div className="flex justify-center">
       <svg
         role="status"
-        className="mr-2 w-8 h-8 text-gray-200 animate-spin dark:text-black fill-green-600"
+        className="mr-2 w-8 h-8 text-gray-200 animate-spin dark:text-black fill-primary"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -38,5 +38,5 @@ export function SpinnerGreenSmall() {
         />
       </svg>
     </div>
-  )
+  );
 }

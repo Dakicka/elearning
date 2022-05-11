@@ -11,12 +11,15 @@
     "@hookform/error-message": "^2.0.0",
     "@types/react-router-dom": "^5.3.3",
     "appwrite": "^7.0.0",
+    "daisyui": "^2.14.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-hook-form": "^7.30.0",
+    "react-icons": "^4.3.1",
     "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.1",
     "@types/node": "^17.0.31",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",

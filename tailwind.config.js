@@ -5,9 +5,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#804bb5",
+        primary: "#3838F5",
+        secondary: "#F5772F"
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+    require("daisyui")
+  ],
 }

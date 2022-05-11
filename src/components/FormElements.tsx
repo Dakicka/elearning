@@ -5,16 +5,28 @@ import { FieldErrors, UseFormRegisterReturn } from "react-hook-form";
 export const InputText: React.FC<{
   name: string;
   type: string;
-  errors: FieldErrors;
+  errors?: FieldErrors;
+  placeholder?: string;
+  defaultValue?: string;
   children: ReactNode;
   registerHandler(): UseFormRegisterReturn;
-}> = ({ children, name, type, errors, registerHandler }) => (
+}> = ({
+  children,
+  name,
+  type,
+  placeholder,
+  defaultValue,
+  errors,
+  registerHandler,
+}) => (
   <div>
     <label className="text-sm font-bold text-gray-600 block">{children}</label>
     <input
       {...registerHandler()}
       type={type}
       className="w-full p-2 border border-gray-300 rounded mt-1"
+      placeholder={placeholder}
+      defaultValue={defaultValue}
     />
     <ErrorMessage errors={errors} name={name} />
   </div>

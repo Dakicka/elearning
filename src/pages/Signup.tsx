@@ -26,10 +26,10 @@ function Signup() {
     <div className="min-h-screen bg-gray-200 flex flex-col justify-center">
       <div className="max-w-md w-full mx-auto">
         <div className="text-3xl font-bold text-gray-900 mt-2 text-center">
-          Sign Up
+          Registrierung
         </div>
         <div className="text-center font-medium text-xl mt-2">
-          Sign up now for free and start trading!
+          Registriere dich jetzt kostenlos und werden zum Life Hacker!
         </div>
         <FormContainer>
           <form onSubmit={onSubmit} className="space-y-6">
@@ -37,45 +37,45 @@ function Signup() {
               errors={errors}
               registerHandler={() =>
                 register("name", {
-                  required: "This is a required field",
+                  required: "Bitte gib deinen Namen ein",
                 })
               }
               name="firstName"
               type="text"
             >
-              First Name
+              Wie heißt du?
             </InputText>
             <InputText
               errors={errors}
               registerHandler={() =>
                 register("email", {
-                  required: "This is a required field",
+                  required: "Bitte gib deine E-Mail-Adresse ein",
                 })
               }
               name="email"
               type="text"
             >
-              Email
+              E-Mail-Adresse
             </InputText>
             <InputText
               errors={errors}
               registerHandler={() =>
                 register("password", {
-                  required: "This is a required field",
+                  required: "Bitte gib dein Passwort ein",
                 })
               }
               name="password"
               type="password"
             >
-              Password
+              Passwort
             </InputText>
             {error && error.statusCode && error.statusCode === 400 && (
-              <Alert msg={"This email is already registered."}>
-                Try to{" "}
+              <Alert msg={"Diese E-Mail-Adresse ist schon registriert."}>
+                Versuch dich{" "}
                 <Link to={"/login"} className="underline">
-                  login
+                  hier
                 </Link>{" "}
-                instead.
+                anzumelden.
               </Alert>
             )}
 

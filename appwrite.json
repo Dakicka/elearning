@@ -1,0 +1,17 @@
+{
+    "projectId": "62779b0e7e7708f99d1e",
+    "projectName": "elearning",
+    "functions": [
+        {
+            "$id": "627b5b80c85f5ab897f7",
+            "name": "mailRegistration",
+            "runtime": "python-3.9",
+            "path": "functions/mailRegistration",
+            "entrypoint": "src/index.py",
+            "execute": [],
+            "events": [],
+            "schedule": "",
+            "timeout": 15
+        }
+    ]
+}

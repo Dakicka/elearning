@@ -1,6 +1,5 @@
-
-import { Session } from "./models/Session"
-import api from "./api/api"
+import { Models } from "appwrite"
+import { api } from "./api/api"
 import { User } from "./models/User"
 
 export interface SignupForm {
@@ -46,7 +45,7 @@ const handleSessionResponse = ({ $id,
   deviceModel,
   countryCode,
   countryName,
-  current }: Session) => {
+  current }: Models.Session) => {
   return { $id,
     userId,
     expire,
@@ -77,7 +76,7 @@ const login = ({
   email,
   password,
 }: LoginForm) => {
-  return api.createSession(email, password).then(handleSessionResponse)
+  return api.login(email, password).then(handleSessionResponse)
 }
 const signup = ({
   name,
@@ -89,7 +88,7 @@ const signup = ({
   )
 }
 
-const logout = async () => {
+const logout = () => {
   api.deleteCurrentSession()
 }
 

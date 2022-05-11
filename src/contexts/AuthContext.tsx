@@ -11,7 +11,7 @@ import { User } from "../models/User";
 import FullPageSpinner from "../components/FullPageSpinner";
 import FullPageErrorFallback from "../components/FullPageErrorFallback";
 import { useAsync } from "../hooks/useAsync";
-import api from "../api/api";
+import { api } from "../api/api";
 
 // TODO: Add session to auth context
 

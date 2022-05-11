@@ -26,15 +26,15 @@ function Login() {
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col justify-center">
       <div className="max-w-md w-full mx-auto">
-        <div className="text-3xl font-bold text-gray-900 mt-2 text-center">
-          Login
+        <div className="text-3xl font-bold text-gray-900 text-center">
+          Anmelden
         </div>
         <div className="text-center font-medium text-sm mt-2">
-          Don't have an account?{" "}
+          Hast du noch keinen Account?{" "}
           <Link className="underline" to={"/signup"}>
-            Sign-up
+            Registriere
           </Link>{" "}
-          for free!
+          dich kostenlos!
         </div>
         <FormContainer>
           <form onSubmit={onSubmit} className="space-y-6">
@@ -60,13 +60,13 @@ function Login() {
               name="password"
               type="password"
             >
-              Password
+              Passwort
             </InputText>
             {error && error.statusCode && error.statusCode >= 400 && (
               <Alert msg={"Your password or email is incorrect!"} />
             )}
 
-            <SubmitButton isLoading={isLoading}>Submit</SubmitButton>
+            <SubmitButton isLoading={isLoading}>Einloggen</SubmitButton>
           </form>
         </FormContainer>
       </div>
