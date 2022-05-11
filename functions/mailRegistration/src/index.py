@@ -1,54 +1,62 @@
-from appwrite.client import Client
+import smtplib
+import ssl
+import json
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
-# You can remove imports of services you don't use
-from appwrite.services.account import Account
-from appwrite.services.avatars import Avatars
-from appwrite.services.database import Database
-from appwrite.services.functions import Functions
-from appwrite.services.health import Health
-from appwrite.services.locale import Locale
-from appwrite.services.storage import Storage
-from appwrite.services.teams import Teams
-from appwrite.services.users import Users
 
-"""
-  'req' variable has:
-    'headers' - object with request headers
-    'payload' - object with request body data
-    'env' - object with environment variables
+def main(request, response):
+    env = request.env
+    event_data = env["APPWRITE_FUNCTION_EVENT_DATA"]
+    payload = json.loads(event_data or '{}')
 
-  'res' variable has:
-    'send(text, status)' - function to return text response. Status code defaults to 200
-    'json(obj, status)' - function to return JSON response. Status code defaults to 200
+    def sendWelcomeEmail():
+        receiver_name = payload["name"]
+        receiver_email = payload["email"]
+        sender_email = env["SMTP_USERNAME"]
 
-  If an error is thrown, a response with code 500 will be returned.
-"""
+        message = MIMEMultipart("alternative")
+        message["Subject"] = "Willkommen bei Life Hackers"
+        message["From"] = sender_email
+        message["To"] = receiver_email
 
-def main(req, res):
-  client = Client()
+        # Create the plain-text and HTML version of your message
+        text = """\
+    Hi {receiver_name},
+    Willkommen bei Life Hackers.
+    Wir freuen uns schon darauf mit dir eine tolle Reise zu starten!""".format(receiver_name=receiver_name)
+        html = """\
+    <html>
+      <body>
+        <p>Hi {receiver_name},<br>
+          Willkommen bei <a href="http://www.google.com">Life Hackers.</a><br>
+          Wir freuen uns schon darauf mit dir eine tolle Reise zu starten!
+        </p>
+      </body>
+    </html>
+    """.format(receiver_name=receiver_name)
 
-  # You can remove services you don't use
-  account = Account(client)
-  avatars = Avatars(client)
-  database = Database(client)
-  functions = Functions(client)
-  health = Health(client)
-  locale = Locale(client)
-  storage = Storage(client)
-  teams = Teams(client)
-  users = Users(client)
+        # Turn these into plain/html MIMEText objects
+        part1 = MIMEText(text, "plain")
+        part2 = MIMEText(html, "html")
 
-  if not req.env.get('APPWRITE_FUNCTION_ENDPOINT') or not req.env.get('APPWRITE_FUNCTION_API_KEY'):
-    print('Environment variables are not set. Function cannot use Appwrite SDK.')
-  else:
-    (
-    client
-      .set_endpoint(req.env.get('APPWRITE_FUNCTION_ENDPOINT', None))
-      .set_project(req.env.get('APPWRITE_FUNCTION_PROJECT_ID', None))
-      .set_key(req.env.get('APPWRITE_FUNCTION_API_KEY', None))
-      .set_self_signed(True)
-    )
-  
-  return res.json({
-    "areDevelopersAwesome": True,
-  })
+        # Add HTML/plain-text parts to MIMEMultipart message
+        # The email client will try to render the last part first
+        message.attach(part1)
+        message.attach(part2)
+
+        # Create secure connection with server and send email
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(env["SMTP_HOST"], env["SMTP_PORT"], context=context) as server:
+            server.login(env["SMTP_USERNAME"], env["SMTP_PASSWORD"])
+            server.sendmail(
+                sender_email, receiver_email, message.as_string()
+            )
+            # Terminating the session
+            server.quit()
+
+    try:
+        response = sendWelcomeEmail()
+        print("response code: ", response.status_code)
+    except Exception as e:
+        print(e)
