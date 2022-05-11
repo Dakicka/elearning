@@ -1,9 +1,8 @@
 import { ReactNode, useEffect, useState } from "react";
 import { MdSchool } from "react-icons/md";
-import { Link, Navigate, NavLink } from "react-router-dom";
+import { Link, useNavigate, NavLink } from "react-router-dom";
 import { api, AppwriteProfile } from "../api/api";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 function NewNavbar() {
   const { user, logout } = useAuth();
