@@ -1,4 +1,3 @@
-import { Appwrite } from "appwrite";
 import { useEffect, useState } from "react";
 import { api, AppwriteClass } from "../api/api";
 import { ClassCard } from "../components/Cards";

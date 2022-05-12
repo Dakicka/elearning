@@ -4,6 +4,8 @@ import NewNavbar from "./components/NewNavbar";
 import { AuthProvider } from "./contexts/AuthContext";
 import Classes from "./pages/Classes";
 import Home from "./pages/Home";
+import Lecture from "./pages/Lecture";
+import Lectures from "./pages/Lectures";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Signup from "./pages/Signup";
@@ -17,6 +19,8 @@ function App() {
           <Route path="signup" element={<Signup />} />
           <Route path="login" element={<Login />} />
           <Route path="classes" element={<Classes />} />
+          <Route path="classes/:classId" element={<Lectures />} />
+          <Route path="lectures/:lectureId" element={<Lecture />} />
           <Route path="profile" element={<Profile />} />
         </Route>
       </Routes>

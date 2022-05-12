@@ -15,13 +15,16 @@ export type AppwriteProfile = {
 export type AppwriteClass = {
     title: string;
     description: string;
-    lectures: Lecture[];
+    thumbnailId: string;
 } & Models.Document
 
-export type Lecture = {
+export type AppwriteLecture = {
     title: string;
     description: string;
-}
+    videoUrl: string;
+    classId: string;
+    exp: number;
+} & Models.Document
 
 export const api = {
     // Create a new session for the user / loggin in 
@@ -92,9 +95,48 @@ export const api = {
         ).toString();
     
 },
+    async getClassThumbnail(fileId: string): Promise<string>{
+    return sdk.storage.getFilePreview(
+        'assets',
+        fileId, 
+        400, 
+        200, 
+        "center", 
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        "webp"
+        ).toString();
+    
+},
     async getAllClasses(): Promise<Models.DocumentList<AppwriteClass>> {
         const classes = await sdk.database.listDocuments<AppwriteClass>("classes")
         return classes
+    },
+
+    async getLecturesForClass(classId: string): Promise<Models.DocumentList<AppwriteLecture>>{
+        const lectures = await sdk.database.listDocuments<AppwriteLecture>("lectures",[Query.equal("classId", classId)],)
+        return lectures
+    },
+
+    async getLecture(lectureId: string): Promise<Models.DocumentList<AppwriteLecture>>{
+
+        const lecture = await await sdk.database.listDocuments<AppwriteLecture>(
+            "lectures",
+            [Query.equal("$id", lectureId)],
+            1        
+          );
+        return lecture
+    },
+
+    async markAsWatched(lectureId: string, userId: string): Promise<void> {
+        const date = Date.now().toString()
+        await sdk.database.createDocument("watchedLectures","unique()",{userId,lectureId, date})
+
     }
 
 }
