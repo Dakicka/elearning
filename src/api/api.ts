@@ -44,9 +44,16 @@ export const api = {
         await sdk.account.deleteSession("current")
     },
 
-    async uploadImage(file: File): Promise<Models.File> {
-        return await sdk.storage.createFile("userUploads", "unique()", file, ["*"]);
-      },
+    async uploadFile(file: File): Promise<string> {
+        const uploadResponse = await sdk.storage.createFile("userUploads","unique()", file)
+        return uploadResponse.$id
+    },
+
+    async updateAvatar(file: File, oldId: string): Promise<string> {
+        sdk.storage.deleteFile("userUploads", oldId)
+        const uploadResponse = await sdk.storage.createFile("userUploads","unique()", file)
+        return uploadResponse.$id
+    },
 
     async getProfile(userId: string): Promise<Models.DocumentList<AppwriteProfile>> {
         const profileResponse = await sdk.database.listDocuments<AppwriteProfile>(
@@ -60,6 +67,11 @@ export const api = {
     async updateProfile(documentId: string, data: any): Promise<AppwriteProfile> {
         const profile = await sdk.database.updateDocument<AppwriteProfile>("profiles", documentId, data)
         return profile
+    },
+
+    async getUserAvatarInitials(name: string): Promise<any> {
+        const initials = await sdk.avatars.getInitials(name)
+        return initials.href
     },
 
     async getUserAvatar(fileId: string): Promise<string>{

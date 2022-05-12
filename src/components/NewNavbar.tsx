@@ -17,10 +17,21 @@ function NewNavbar() {
   }, [user]);
 
   useEffect(() => {
-    if (profile != null) {
+    if (profile != null && profile.avatarId != null) {
       api.getUserAvatar(profile.avatarId).then((res) => setAvatar(res));
     }
   }, [profile]);
+
+  useEffect(() => {
+    if (
+      profile != null &&
+      (profile.avatarId === "" || profile.avatarId === null) &&
+      user
+    ) {
+      api.getUserAvatarInitials(user?.name).then((res) => setAvatar(res));
+    }
+  }, [profile]);
+
   const onLogout = () => {
     logout();
     navigate("/");

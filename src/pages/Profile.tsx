@@ -7,6 +7,11 @@ import { useAuth } from "../contexts/AuthContext";
 
 interface FormData {
   grade: number;
+  avatarId: string;
+}
+
+interface FormDataAvatar {
+  avatarFile: FileList;
 }
 
 function Profile() {
@@ -14,14 +19,24 @@ function Profile() {
   const [avatar, setAvatar] = useState<string>("");
   const [profileIsLoading, setProfileIsLoading] = useState(true);
   const [avatarIsLoading, setAvatarIsLoading] = useState(true);
+  const [formIsSubmitting, setFormIsSubmitting] = useState(false);
+  const [avatarId, setAvatarId] = useState("");
+
   const { user } = useAuth();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<FormData>({ mode: "onSubmit" });
 
+  const {
+    register: registerAvatar,
+    handleSubmit: handleAvatarUpload,
+    formState: avatarFormState,
+  } = useForm<FormDataAvatar>({ mode: "onSubmit" });
+
+  // Get user profile
   useEffect(() => {
     if (user) {
       api
@@ -31,20 +46,52 @@ function Profile() {
     }
   }, [user]);
 
+  // get user avatar
   useEffect(() => {
-    if (profile != null && user) {
+    if (profile != null && profile.avatarId != null && user) {
       setAvatarIsLoading(true);
       api
         .getUserAvatar(profile.avatarId)
         .then((res) => setAvatar(res))
         .then(() => setAvatarIsLoading(false));
+    } else if (user) {
+      api
+        .getUserAvatarInitials(user?.name)
+        .then((res) => setAvatar(res))
+        .then(() => setAvatarIsLoading(false));
     }
   }, [user, profile]);
 
-  const onSubmit = handleSubmit(({ grade }) => {
-    api.updateProfile(profile?.$id, { grade }).then((res) => {
-      setProfile(res);
-    });
+  const uploadAvatar = handleAvatarUpload(async ({ avatarFile }) => {
+    if (profile.avatarId != null && profile.avatarId != "") {
+      const updateResponse = await api.updateAvatar(
+        avatarFile[0],
+        profile.avatarId
+      );
+      api
+        .updateProfile(profile?.$id, { avatarId: updateResponse })
+        .then((res) => {
+          setProfile(res);
+        });
+    } else {
+      const updateResponse = await api.uploadFile(avatarFile[0]);
+      api
+        .updateProfile(profile?.$id, { avatarId: updateResponse })
+        .then((res) => {
+          setProfile(res);
+        });
+    }
+  });
+
+  const onSubmit = handleSubmit(async ({ grade }) => {
+    if (avatarFormState.isDirty) {
+      await uploadAvatar();
+    }
+    if (isDirty) {
+      api.updateProfile(profile?.$id, { grade }).then((res) => {
+        setProfile(res);
+      });
+    }
   });
 
   if (
@@ -76,6 +123,7 @@ function Profile() {
                   <p>Profilbild</p>
                   <br />
                   <img src={avatar} alt="Avatar" />
+                  <input type="file" {...registerAvatar("avatarFile")} />
                   <div className="divider"></div>
                   <label className="text-sm font-bold block mt-5">
                     In welche Klassestufe gehst du momentan?
