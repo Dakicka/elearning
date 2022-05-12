@@ -9,7 +9,7 @@
             "path": "functions/mailRegistration",
             "entrypoint": "src/index.py",
             "execute": [],
-            "events": [],
+            "events": ["account.create"],
             "schedule": "",
             "timeout": 15
         }
