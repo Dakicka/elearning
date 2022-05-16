@@ -24,12 +24,12 @@ function Login() {
   isSuccess && navigate("/", { replace: true });
 
   return (
-    <div className="min-h-screen bg-gray-200 flex flex-col justify-center">
+    <div className="min-h-screen bg-gray-200 flex flex-col md:justify-center p-5">
       <div className="max-w-md w-full mx-auto">
         <div className="text-3xl font-bold text-gray-900 text-center">
           Anmelden
         </div>
-        <div className="text-center font-medium text-sm mt-2">
+        <div className="text-center font-medium text-sm mt-2 text-gray-700 mb-8">
           Hast du noch keinen Account?{" "}
           <Link className="underline" to={"/signup"}>
             Registriere

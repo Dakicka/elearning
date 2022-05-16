@@ -34,7 +34,7 @@ function Layout() {
       {/*   <Navbar /> */}
       <NewNavbar />
       <div className="bg-gray-100">
-        <div className="max-w-5xl mx-auto bg-white min-h-screen">
+        <div className="max-w-5xl mx-auto bg-black min-h-screen">
           <Outlet />
         </div>
       </div>

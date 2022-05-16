@@ -2,16 +2,18 @@ import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 import { useParams } from "react-router-dom";
 import { api, AppwriteLecture } from "../api/api";
+import { SpinnerGreenSmall } from "../components/Spinner";
 import { useAuth } from "../contexts/AuthContext";
 
 function Lecture() {
   const { user } = useAuth();
   const { lectureId } = useParams<{ lectureId: string }>();
   const [lecture, setLecture] = useState<AppwriteLecture>();
+  const [isLoading, setIsLoading] = useState(true);
 
   const onStart = () => {
-    if (user && lectureId) {
-      api.markAsWatched(lectureId, user?.$id);
+    if (user && lectureId && lecture) {
+      api.markAsWatched(lectureId, user?.$id, lecture?.exp);
     }
   };
 
@@ -26,14 +28,30 @@ function Lecture() {
 
   return (
     <>
-      <p> Titel: {lecture?.title}</p>
-      <p> Beschreibung: {lecture?.description}</p>
-      <p> Ehrfahrungspunkte: {lecture?.exp}</p>
-      <ReactPlayer
-        url={lecture?.videoUrl}
-        onProgress={(res) => console.log(res)}
-        onStart={onStart}
-      />
+      <div style={{ position: "relative", paddingTop: "56.25%" }}>
+        <ReactPlayer
+          style={{ position: "absolute", top: 0, left: 0 }}
+          url={lecture?.videoUrl}
+          onProgress={(res) => console.log(res)}
+          onStart={onStart}
+          width="100%"
+          height="100%"
+          onReady={() => setIsLoading(false)}
+        />
+      </div>
+      {isLoading ? (
+        <SpinnerGreenSmall />
+      ) : (
+        <div className="bg-black px-5 py-5">
+          <p className="text-center font-bold text-xl">
+            {lecture?.title}{" "}
+            <div className="badge badge-primary">{lecture?.exp} XP</div>
+          </p>
+          <br />
+
+          <p> {lecture?.description}</p>
+        </div>
+      )}
     </>
   );
 }

@@ -133,7 +133,7 @@ function Navbar() {
           </div>
         </div>
         {/* Mobile menu */}
-        <div className={!isOpen ? "hidden" : "md:hidden text-center"}>
+        <div className={!isOpen ? "hidden" : "text-center"}>
           <div className="flex flex-col p-3">
             {user && (
               <div>

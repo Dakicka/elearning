@@ -26,6 +26,13 @@ export type AppwriteLecture = {
     exp: number;
 } & Models.Document
 
+export type AppwriteWatchedClass = {
+    userId: string;
+    lectureId: string;
+    date: number;
+    xp: number
+} & Models.Document
+
 export const api = {
     // Create a new session for the user / loggin in 
     async login(email: string, password: string): Promise<Models.Session> {
@@ -40,6 +47,7 @@ export const api = {
 
     async createAccount(email: string, password: string, name: string): Promise<any> {
         const user = await sdk.account.create("unique()", email, password, name);
+        await sdk.account.createSession(email, password)
         return user
     },
 
@@ -133,10 +141,19 @@ export const api = {
         return lecture
     },
 
-    async markAsWatched(lectureId: string, userId: string): Promise<void> {
+    async markAsWatched(lectureId: string, userId: string, xp: number): Promise<void> {
         const date = Date.now().toString()
-        await sdk.database.createDocument("watchedLectures","unique()",{userId,lectureId, date})
+        await sdk.database.createDocument("watchedLectures","unique()",{userId,lectureId, date, xp})
 
+    },
+
+    async getUserXp(userId: string): Promise<number>{
+        const watchedLectures = await sdk.database.listDocuments<AppwriteWatchedClass>("watchedLectures",[Query.equal("userId", userId)],)
+        
+        let xp = 0
+        watchedLectures.documents.forEach((row) => xp += row.xp )
+
+        return xp
     }
 
 }

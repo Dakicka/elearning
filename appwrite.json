@@ -9,6 +9,19 @@
             "path": "functions/mailRegistration",
             "entrypoint": "src/index.py",
             "execute": [],
+            "events": [
+                "account.create"
+            ],
+            "schedule": "",
+            "timeout": 15
+        },
+        {
+            "$id": "628261a50c39f3459db3",
+            "name": "createProfile",
+            "runtime": "python-3.9",
+            "path": "functions/createProfile",
+            "entrypoint": "src/index.py",
+            "execute": [],
             "events": ["account.create"],
             "schedule": "",
             "timeout": 15

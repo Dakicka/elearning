@@ -1,4 +1,3 @@
-import React from "react";
 import { SpinnerPrimaryLarge } from "./Spinner";
 
 function FullPageSpinner() {

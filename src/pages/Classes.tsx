@@ -15,7 +15,7 @@ function Classes() {
   return (
     <>
       <div className="mx-5 py-5">
-        <div className="grid grid-cols-2 gap-5 auto-rows-max">
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-5 auto-rows-max">
           {classes &&
             classes.map((awClass) => {
               return (

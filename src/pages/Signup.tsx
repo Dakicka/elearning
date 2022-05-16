@@ -21,14 +21,17 @@ function Signup() {
   const onSubmit = handleSubmit(({ email, password, name }) => {
     run(signup({ email, password, name }));
   });
-  if (isSuccess) navigate("/", { replace: true });
+  if (isSuccess) {
+    navigate("/", { replace: true });
+  }
+
   return (
-    <div className="min-h-screen bg-gray-200 flex flex-col justify-center">
+    <div className="min-h-screen bg-gray-200 flex flex-col md:justify-center p-5">
       <div className="max-w-md w-full mx-auto">
         <div className="text-3xl font-bold text-gray-900 mt-2 text-center">
           Registrierung
         </div>
-        <div className="text-center font-medium text-xl mt-2">
+        <div className="text-center font-medium text-xl mt-2 text-gray-700 mb-7">
           Registriere dich jetzt kostenlos und werden zum Life Hacker!
         </div>
         <FormContainer>
@@ -79,7 +82,7 @@ function Signup() {
               </Alert>
             )}
 
-            <SubmitButton isLoading={isLoading}>Submit</SubmitButton>
+            <SubmitButton isLoading={isLoading}>Registrieren</SubmitButton>
           </form>
         </FormContainer>
       </div>

@@ -5,6 +5,7 @@ import { api, AppwriteProfile } from "../api/api";
 import { useAuth } from "../contexts/AuthContext";
 
 function NewNavbar() {
+  const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
   const [profile, setProfile] = useState<AppwriteProfile>(null!);
   const [avatar, setAvatar] = useState<string>("");
@@ -20,7 +21,10 @@ function NewNavbar() {
     if (profile != null && profile.avatarId != null) {
       api.getUserAvatar(profile.avatarId).then((res) => setAvatar(res));
     }
-  }, [profile]);
+    if (user && profile == null) {
+      api.getUserAvatarInitials(user?.name).then((res) => setAvatar(res));
+    }
+  }, [profile, user]);
 
   useEffect(() => {
     if (
@@ -34,6 +38,7 @@ function NewNavbar() {
 
   const onLogout = () => {
     logout();
+    setIsOpen(false);
     navigate("/");
   };
   const Logo = () => (
@@ -44,15 +49,20 @@ function NewNavbar() {
       </Link>
     </div>
   );
-  const NavigationMenuItem: React.FC<{
+
+  const MobileNavigationMenuItem: React.FC<{
     to: string;
     children: ReactNode;
-  }> = ({ children, to }) => {
-    const activeClassNames = "py-5 px-3 text-white hover:text-secondary";
-    const inActiveClassNames = "py-5 px-3 text-gray-200 hover:text-secondary";
+    toggleMenu?: () => void;
+  }> = ({ children, to, toggleMenu }) => {
+    const activeClassNames =
+      "block py-2 px-4 text-sm hover:bg-gray-700 text-secondary";
+    const inActiveClassNames =
+      "block py-2 px-4 text-sm hover:bg-gray-700 text-gray-200";
     return (
       <NavLink
         to={to}
+        onClick={toggleMenu}
         className={({ isActive }) =>
           isActive ? activeClassNames : inActiveClassNames
         }
@@ -61,6 +71,28 @@ function NewNavbar() {
       </NavLink>
     );
   };
+
+  const MobileNavigationHamburgerButton: React.FC<{
+    toggleMenu: () => void;
+  }> = ({ toggleMenu }) => (
+    <button onClick={toggleMenu}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 text-white"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="2"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M4 6h16M4 12h16M4 18h16"
+        />
+      </svg>
+    </button>
+  );
+
   return (
     <>
       <div className="navbar bg-black max-w-5xl mx-auto px-8">
@@ -68,43 +100,63 @@ function NewNavbar() {
           <Logo />
         </div>
         <div className="flex-none">
+          {/* Mobile button */}
           {user ? (
-            <>
-              <p className="mr-5 text-white">{user.name}</p>
-              <div className="dropdown dropdown-end">
-                <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-                  <div className="w-10 rounded-full">
-                    <img src={avatar} />
-                  </div>
-                </label>
-                <ul
-                  tabIndex={0}
-                  className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
-                >
-                  <li>
-                    <Link to="profile" className="justify-between">
-                      Profil
-                    </Link>
-                  </li>
-                  <li>
-                    <a>Einstellungen</a>
-                  </li>
-                  <li>
-                    <a onClick={onLogout}>Logout</a>
-                  </li>
-                </ul>
-              </div>{" "}
-            </>
+            <div className="flex items-center">
+              <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+                <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                  <img src={avatar} onClick={() => setIsOpen(!isOpen)} />
+                </div>
+              </label>
+            </div>
           ) : (
+            <MobileNavigationHamburgerButton
+              toggleMenu={() => setIsOpen(!isOpen)}
+            />
+          )}
+        </div>
+      </div>
+      {/* Mobile menu */}
+      <div className={!isOpen ? "hidden" : "text-center max-w-5xl mx-auto"}>
+        <div className="flex flex-col p-3 max-w-md mx-auto">
+          {user && (
             <div>
-              <NavigationMenuItem to="login">Login</NavigationMenuItem>
-
-              {/* TODO: Abstract into button component */}
-              <Link
-                to="/signup"
-                className="py-2 px-3 bg-primary text-black font-bold rounded hover:bg-secondary transition duration-300"
+              <MobileNavigationMenuItem
+                to="/profile"
+                toggleMenu={() => setIsOpen(false)}
               >
-                Signup
+                Profil
+              </MobileNavigationMenuItem>
+              <MobileNavigationMenuItem
+                to="/classes"
+                toggleMenu={() => setIsOpen(false)}
+              >
+                Kurse
+              </MobileNavigationMenuItem>
+            </div>
+          )}
+          {user ? (
+            <button
+              onClick={() => onLogout()}
+              className="px-3 bg-primary text-black font-bold rounded hover:bg-secondary transition duration-300 my-3"
+            >
+              Ausloggen
+            </button>
+          ) : (
+            <div className="flex flex-col p-3">
+              <NavLink
+                onClick={() => setIsOpen(false)}
+                to="/login"
+                className="py-2 my-2 px-3 w-full bg-primary text-black font-bold rounded hover:bg-secondary transition duration-300"
+              >
+                Einloggen
+              </NavLink>
+              <Link
+                onClick={() => setIsOpen(false)}
+                to="/signup"
+                className="py-2  my-2 px-3 w-full bg-primary text-black font-bold rounded hover:bg-secondary transition duration-300"
+              >
+                Registrieren
               </Link>
             </div>
           )}

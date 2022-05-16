@@ -10,7 +10,7 @@ export const ClassCard: React.FC<{ awClass: AppwriteClass }> = ({
   api.getClassThumbnail(awClass.thumbnailId).then((res) => setClassImage(res));
 
   return (
-    <div className="card w-96 bg-base-100 shadow-xl h-full">
+    <div className="card w-80 lg:w-96 bg-base-100 shadow-xl h-full">
       <figure>
         <img src={classImage} alt="class topic picture" />
       </figure>
@@ -36,7 +36,7 @@ export const LectureCard: React.FC<{ awLecture: AppwriteLecture }> = ({
   const navigate = useNavigate();
 
   return (
-    <div className="card w-96 bg-base-100 shadow-xl h-full">
+    <div className="card w-80 lg:w-96 bg-base-100 shadow-xl h-full">
       <div className="card-body">
         <h2 className="card-title">{awLecture.title}</h2>
         <div className="badge badge-primary">{awLecture.exp} XP</div>

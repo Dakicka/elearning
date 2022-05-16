@@ -20,7 +20,7 @@ export const InputText: React.FC<{
   registerHandler,
 }) => (
   <div>
-    <label className="text-sm font-bold text-gray-600 block">{children}</label>
+    <label className="text-sm font-bold text-black block">{children}</label>
     <input
       {...registerHandler()}
       type={type}
@@ -35,7 +35,7 @@ export const InputText: React.FC<{
 export const FormContainer: React.FC<{ children: ReactNode }> = ({
   children,
 }) => (
-  <div className="max-w-md w-full-md mx-auto bg-white border p-8 border-gray-300 mt-4">
+  <div className="max-w-md w-full-md mx-auto bg-gray-500 p-8 rounded-lg">
     {children}
   </div>
 );
