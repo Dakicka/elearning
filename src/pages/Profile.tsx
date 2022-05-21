@@ -80,7 +80,8 @@ function Profile() {
         .updateProfile(profile?.$id, { avatarId: updateResponse })
         .then((res) => {
           setProfile(res);
-        });
+        })
+        .then(() => location.reload());
     } else {
       const updateResponse = await api.uploadFile(avatarFile[0]);
       api
