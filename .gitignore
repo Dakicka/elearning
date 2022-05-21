@@ -26,3 +26,6 @@ dist-ssr
 
 # Enviroment files
 .env
+
+# Python virtual env
+server/venv

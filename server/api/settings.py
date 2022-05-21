@@ -1,4 +1,6 @@
 from pathlib import Path
+from appwrite.client import Client
+from appwrite.services.users import Users
 import environ
 import os
 
@@ -23,6 +25,16 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+
+client = Client()
+
+(client
+ .set_endpoint(env("VITE_APPWRITE_API_ENDPOINT"))  # Your API Endpoint
+ .set_project(env("VITE_APPWRITE_PROJECT_ID"))  # Your project ID
+ .set_key(env("APPWRITE_API_ENDPOINT"))  # Your secret API key
+ .set_self_signed()  # Use only on dev mode with a self-signed SSL cert
+ )
 
 # Application definition
 
