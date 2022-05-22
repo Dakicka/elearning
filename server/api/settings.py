@@ -1,13 +1,13 @@
 from pathlib import Path
-from appwrite.client import Client
-from appwrite.services.users import Users
 import environ
 import os
+
 
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False)
 )
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,15 +27,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-client = Client()
-
-(client
- .set_endpoint(env("VITE_APPWRITE_API_ENDPOINT"))  # Your API Endpoint
- .set_project(env("VITE_APPWRITE_PROJECT_ID"))  # Your project ID
- .set_key(env("APPWRITE_API_ENDPOINT"))  # Your secret API key
- .set_self_signed()  # Use only on dev mode with a self-signed SSL cert
- )
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -46,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'restapi',
 ]
 
 MIDDLEWARE = [

@@ -23,6 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# Sqlite database
+server/db.sqlite3
+
 
 # Enviroment files
 .env
