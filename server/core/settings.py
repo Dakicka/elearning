@@ -2,7 +2,6 @@ from pathlib import Path
 import environ
 import os
 
-
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False)
@@ -26,7 +25,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'courses',
 ]
 
 MIDDLEWARE = [
@@ -49,7 +48,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'api.urls'
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
@@ -67,7 +66,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'api.wsgi.application'
+WSGI_APPLICATION = 'core.wsgi.application'
 
 
 # Database
