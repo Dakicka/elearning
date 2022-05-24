@@ -11,31 +11,6 @@ function NewNavbar() {
   const [avatar, setAvatar] = useState<string>("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user?.$id) {
-      api.getProfile(user.$id).then((res) => setProfile(res.documents[0]));
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (profile != null && profile.avatarId != null) {
-      api.getUserAvatar(profile.avatarId).then((res) => setAvatar(res));
-    }
-    if (user && profile == null) {
-      api.getUserAvatarInitials(user?.name).then((res) => setAvatar(res));
-    }
-  }, [profile, user]);
-
-  useEffect(() => {
-    if (
-      profile != null &&
-      (profile.avatarId === "" || profile.avatarId === null) &&
-      user
-    ) {
-      api.getUserAvatarInitials(user?.name).then((res) => setAvatar(res));
-    }
-  }, [profile]);
-
   const onLogout = () => {
     logout();
     setIsOpen(false);

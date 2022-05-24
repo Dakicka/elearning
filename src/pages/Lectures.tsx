@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api, AppwriteLecture } from "../api/api";
+import { api, AppwriteLecture } from "../hooks/api/api";
 import { LectureCard } from "../components/Cards";
 import { useParams } from "react-router-dom";
 

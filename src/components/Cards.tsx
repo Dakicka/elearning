@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, AppwriteClass, AppwriteLecture } from "../api/api";
+import { api, AppwriteClass, AppwriteLecture } from "../hooks/api/api";
+import { Course } from "../models/Course";
 
-export const ClassCard: React.FC<{ awClass: AppwriteClass }> = ({
-  awClass,
-}) => {
+export const CourseCard: React.FC<{ course: Course }> = ({ course }) => {
   const [classImage, setClassImage] = useState<string>("");
   const navigate = useNavigate();
-  api.getClassThumbnail(awClass.thumbnailId).then((res) => setClassImage(res));
 
   return (
     <div className="card w-80 lg:w-96 bg-base-100 shadow-xl h-full">
@@ -15,12 +13,12 @@ export const ClassCard: React.FC<{ awClass: AppwriteClass }> = ({
         <img src={classImage} alt="class topic picture" />
       </figure>
       <div className="card-body">
-        <h2 className="card-title">{awClass.title}</h2>
-        <p>{awClass.description}</p>
+        <h2 className="card-title">{course.title}</h2>
+        <p>{course.description}</p>
         <div className="card-actions justify-end">
           <button
             className="btn btn-primary bg-primary hover:bg-secondary text-black"
-            onClick={() => navigate(`/classes/${awClass.$id}`)}
+            onClick={() => navigate(`/classes/${course.id}`)}
           >
             Jetzt Starten
           </button>

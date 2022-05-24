@@ -1,9 +1,8 @@
 export interface User {
-    $id: string;
-    name: string;
-    registration: number;
-    status: boolean;
-    passwordUpdate: number;
-    email: string;
-    emailVerification: boolean;
+    id: number
+    email: string
+    name: string
+    avatar: string
+    grade: number
+    xp: number
 }

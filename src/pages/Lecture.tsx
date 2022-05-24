@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 import { useParams } from "react-router-dom";
-import { api, AppwriteLecture } from "../api/api";
+import { api, AppwriteLecture } from "../hooks/api/api";
 import { SpinnerGreenSmall } from "../components/Spinner";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -13,7 +13,7 @@ function Lecture() {
 
   const onStart = () => {
     if (user && lectureId && lecture) {
-      api.markAsWatched(lectureId, user?.$id, lecture?.exp);
+      // TODO: Mark as watched
     }
   };
 

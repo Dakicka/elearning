@@ -5,45 +5,33 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useState,
 } from "react";
 import * as auth from "../AuthProvider";
 import { User } from "../models/User";
 import FullPageSpinner from "../components/FullPageSpinner";
 import FullPageErrorFallback from "../components/FullPageErrorFallback";
 import { useAsync } from "../hooks/useAsync";
-import { api } from "../api/api";
+import axios from "axios";
+import { config } from "../utils/config";
 
 // TODO: Add session to auth context
 
 interface AuthContextType {
   user: User | null;
-  login: (form: { email: string; password: string }) => Promise<any>;
-  signup: (form: {
-    email: string;
-    password: string;
-    name: string;
-  }) => Promise<any>;
+  login: (form: auth.LoginRegisterForm) => Promise<any>;
+  register: (form: auth.LoginRegisterForm) => Promise<any>;
   logout: () => void;
+  authTokens: auth.AuthTokens | null;
+  setAuthTokens: (authTokens: auth.AuthTokens | null) => void;
 }
 
-const bootstrapAppData = async () => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  let user: User = null!;
-
-  const userToken = await auth.getToken();
-  if (userToken && userToken != "[]") {
-    const data = await api
-      .getAccount()
-      .then((res) => (user = res))
-      .catch(() => {});
-    user = data;
-  }
-  return user;
-};
-
-let AuthContext = createContext<AuthContextType>(null!);
+export let AuthContext = createContext<AuthContextType>(null!);
 
 const AuthProvider = (props: { children: ReactNode }) => {
+  const [authTokens, setAuthTokens] = useState<auth.AuthTokens | null>(() =>
+    auth.getTokens()
+  );
   const {
     state: { data: user },
     status,
@@ -56,6 +44,29 @@ const AuthProvider = (props: { children: ReactNode }) => {
     setData,
   } = useAsync<User>();
 
+  const bootstrapAppData = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    let user: User = null!;
+
+    // Get authTokens from local storage
+    let authTokens = await auth.getTokens();
+
+    if (authTokens.accessToken && authTokens.accessToken.length > 2) {
+      if (auth.isTokenExpired(authTokens.accessToken)) {
+        const newTokens = await auth.refreshTokens(authTokens.refreshToken);
+        authTokens = newTokens;
+        setAuthTokens(authTokens);
+      }
+
+      const data = await axios.get("/identity/me", {
+        baseURL: config.apiBaseUrl,
+        headers: { Authorization: `Bearer ${authTokens.accessToken}` },
+      });
+      user = data.data;
+    }
+    return user;
+  };
+
   // Get user data when initialize
   useEffect(() => {
     const appDataPromise = bootstrapAppData();
@@ -63,16 +74,17 @@ const AuthProvider = (props: { children: ReactNode }) => {
   }, [run]);
 
   const login = useCallback(
-    (form: auth.LoginForm) =>
+    (form: auth.LoginRegisterForm) =>
       // login user (create session)
       auth.login(form).then(() => {
-        // get user data
-        api.getAccount().then((res) => setData(res));
+        const appDataPromise = bootstrapAppData();
+        run(appDataPromise);
       }),
     [setData]
   );
-  const signup = useCallback(
-    (form: auth.SignupForm) => auth.signup(form).then((user) => setData(user)),
+  const register = useCallback(
+    (form: auth.LoginRegisterForm) =>
+      auth.register(form).then((user) => setData(user)),
     [setData]
   );
 
@@ -82,8 +94,8 @@ const AuthProvider = (props: { children: ReactNode }) => {
   }, [setData]);
 
   const value = useMemo(
-    () => ({ user, login, logout, signup }),
-    [signup, login, logout, user]
+    () => ({ user, login, logout, register, authTokens, setAuthTokens }),
+    [register, login, logout, user, authTokens]
   );
   if (isLoading || isIdle) {
     return <FullPageSpinner />;

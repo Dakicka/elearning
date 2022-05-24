@@ -1,8 +1,8 @@
 import { Appwrite, Models, Query } from "appwrite";
-import { appwriteServer } from "../utils/config";
+
 
 const sdk = new Appwrite()
-sdk.setEndpoint(appwriteServer.endpoint).setProject(appwriteServer.project);
+sdk.setEndpoint("appwriteServer.endpoint").setProject("appwriteServer.project");
 
 
 export type AppwriteProfile = {
@@ -32,6 +32,7 @@ export type AppwriteWatchedClass = {
     date: number;
     xp: number
 } & Models.Document
+
 
 export const api = {
     // Create a new session for the user / loggin in 

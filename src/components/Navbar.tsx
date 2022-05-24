@@ -6,6 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
+  console.log(user);
   const navigate = useNavigate();
   const MobileNavigationMenuItem: React.FC<{
     to: string;
