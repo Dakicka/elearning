@@ -30,14 +30,18 @@ export const isTokenExpired = (token: string) => {
 };
 
 const refreshTokens = async (refreshToken: string) => {
-  const response = await axios.post(`${API_BASE_URL}/identity/login/refresh`, {
-    refresh: refreshToken,
-  });
-  if (response.status === 401) {
-    logout();
+  const response = await axios
+    .post(`${API_BASE_URL}/identity/login/refresh`, {
+      refresh: refreshToken,
+    })
+    .catch(() => {
+      logout();
+      return null;
+    });
+
+  if (!response) {
     return null;
   }
-
   const newAuthTokens = {
     accessToken: response.data.access,
     refreshToken: response.data.refresh,

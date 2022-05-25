@@ -37,8 +37,9 @@ function Lecture() {
         <div className="bg-black px-5 py-5">
           <p className="text-center font-bold text-xl">
             {lecture?.title}{" "}
-            <div className="badge badge-primary">{lecture?.xp} XP</div>
+            <span className="badge badge-primary">{lecture?.xp} XP</span>
           </p>
+
           <br />
 
           <p> {lecture?.description}</p>
