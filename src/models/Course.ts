@@ -1,4 +1,4 @@
-interface Lecture {
+export interface Lecture {
     id: number
     title: string,
     description: string

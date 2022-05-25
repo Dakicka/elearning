@@ -36,7 +36,8 @@ def me(request):
             "email": account_serializer.data["email"],
             "name": profile_serializer.data["name"],
             "avatar": profile_serializer.data["avatar"],
-            "grade": profile_serializer.data["grade"]}
+            "grade": profile_serializer.data["grade"],
+            "xp": 1250}
         return Response(response)
 
     if method == 'PUT':

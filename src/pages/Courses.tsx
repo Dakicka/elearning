@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
-import { api, AppwriteClass } from "../hooks/api/api";
 import { CourseCard } from "../components/Cards";
 import { useFetchCoursesAPI } from "../hooks/api/useCourseAPI";
 
-function Classes() {
+function Courses() {
   const { data: courses } = useFetchCoursesAPI();
 
   return (
@@ -24,4 +22,4 @@ function Classes() {
   );
 }
 
-export default Classes;
+export default Courses;

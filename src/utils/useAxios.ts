@@ -24,7 +24,7 @@ const useAxios = () => {
             }
             const newAuthTokens = await refreshTokens(authTokens.refreshToken)
 
-            req.headers = {Authorization: `Bearer ${newAuthTokens.accessToken}`}
+            req.headers = {Authorization: `Bearer ${newAuthTokens?.accessToken}`}
             console.log("refreshed the access token")
             return req
         }

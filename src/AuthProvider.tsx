@@ -3,8 +3,6 @@ import { config } from "./utils/config";
 import dayjs from "dayjs";
 import jwt_decode, { JwtPayload } from "jwt-decode";
 import axios from "axios";
-import { useContext } from "react";
-import { AuthContext } from "./contexts/AuthContext";
 
 const localStorageKey = "__auth_provider_token__";
 const localStorageKeyRefreshToken = "__auth_provider_refreshtoken__";
@@ -28,14 +26,18 @@ export const isTokenExpired = (token: string) => {
   const decodedToken = jwt_decode<JwtPayload>(token);
   const expieryTime = dayjs.unix(decodedToken.exp ? decodedToken.exp : 0);
   const isExpired = expieryTime.diff(dayjs()) < 1;
-
   return isExpired;
 };
 
-export const refreshTokens = async (refreshToken: string) => {
+const refreshTokens = async (refreshToken: string) => {
   const response = await axios.post(`${API_BASE_URL}/identity/login/refresh`, {
     refresh: refreshToken,
   });
+  if (response.status === 401) {
+    logout();
+    return null;
+  }
+
   const newAuthTokens = {
     accessToken: response.data.access,
     refreshToken: response.data.refresh,
@@ -53,6 +55,9 @@ const getTokens = () => {
     accessToken: window.localStorage.getItem(localStorageKey),
     refreshToken: window.localStorage.getItem(localStorageKeyRefreshToken),
   };
+  if (authTokens.accessToken === null || authTokens.refreshToken === null) {
+    return null;
+  }
 
   return authTokens as AuthTokens;
 };
@@ -94,28 +99,11 @@ const requestResetPassword = async ({ email }: { email: string }) => {
   });
 };
 
-const refreshToken = async () => {
-  const token = window.localStorage.getItem(localStorageKey);
-  const refreshToken = window.localStorage.getItem(localStorageKeyRefreshToken);
-  if (token && refreshToken) {
-    try {
-      await client(
-        "identity/login/refresh",
-        refreshToken,
-        "POST",
-        refreshToken
-      ).then(handleUserResponse);
-    } catch (error) {
-      console.error("Token refresh failed we will log you out.");
-    }
-  }
-};
-
 const logout = async () => {
   const refreshToken = window.localStorage.getItem(localStorageKeyRefreshToken);
   if (refreshToken) {
     try {
-      await client("identity/user/logout/", undefined, "GET", refreshToken);
+      await client("identity/logout", { refresh: refreshToken });
     } catch (error) {
       console.error("We have to log you out please try to authenticate again.");
     }
@@ -166,7 +154,7 @@ export {
   logout,
   register,
   localStorageKey,
-  refreshToken,
+  refreshTokens,
   requestResetPassword,
   localStorageKeyRefreshToken,
 };

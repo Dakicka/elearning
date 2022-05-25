@@ -1,6 +1,5 @@
-import Classes from "./Classes";
-import Profile from "./Profile";
+import Courses from "./Courses";
 
 export const AuthenticatedApp = () => {
-  return <Classes />;
+  return <Courses />;
 };

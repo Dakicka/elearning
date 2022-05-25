@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { Alert } from "../components/Alert";
 import { Link, useNavigate } from "react-router-dom";
 import { SubmitButton } from "../components/Button";
-import { LoginForm } from "../AuthProvider";
+import { LoginRegisterForm } from "../AuthProvider";
 
 function Login() {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginForm>({ mode: "onSubmit" });
+  } = useForm<LoginRegisterForm>({ mode: "onSubmit" });
 
   const { run, error, isSuccess, isLoading } = useAsync<any>();
   const { login } = useAuth();

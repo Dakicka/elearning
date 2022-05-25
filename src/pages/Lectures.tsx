@@ -1,30 +1,24 @@
 import { useEffect, useState } from "react";
-import { api, AppwriteLecture } from "../hooks/api/api";
+
 import { LectureCard } from "../components/Cards";
 import { useParams } from "react-router-dom";
+import { Lecture } from "../models/Course";
+import { useQueryLecturesAPI } from "../hooks/api/useCourseAPI";
 
 function Lectures() {
-  const [lectures, setLectures] = useState<AppwriteLecture[]>();
-  const { classId } = useParams<{ classId: string }>();
+  const { courseId } = useParams<{ courseId: string }>();
 
-  useEffect(() => {
-    if (classId) {
-      api
-        .getLecturesForClass(classId)
-        .then((res) => setLectures(res.documents))
-        .catch((err) => console.error(err));
-    }
-  }, [classId]);
+  const { data: lectures } = useQueryLecturesAPI(courseId ? courseId : "");
 
   return (
     <>
       <div className="mx-5 py-5">
         <div className="grid md:grid-cols-2 grid-cols-1 gap-5 auto-rows-max">
           {lectures &&
-            lectures.map((awLecture) => {
+            lectures.map((lecture) => {
               return (
-                <div className="mx-auto" key={awLecture.$id}>
-                  <LectureCard awLecture={awLecture} />
+                <div className="mx-auto" key={lecture.id}>
+                  <LectureCard lecture={lecture} />
                 </div>
               );
             })}

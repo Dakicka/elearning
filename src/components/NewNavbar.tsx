@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { MdSchool } from "react-icons/md";
 import { Link, useNavigate, NavLink } from "react-router-dom";
-import { api, AppwriteProfile } from "../api/api";
+import { api, AppwriteProfile } from "../hooks/api/api";
 import { useAuth } from "../contexts/AuthContext";
 
 function NewNavbar() {
@@ -103,7 +103,7 @@ function NewNavbar() {
                 Profil
               </MobileNavigationMenuItem>
               <MobileNavigationMenuItem
-                to="/classes"
+                to="/courses"
                 toggleMenu={() => setIsOpen(false)}
               >
                 Kurse
@@ -128,7 +128,7 @@ function NewNavbar() {
               </NavLink>
               <Link
                 onClick={() => setIsOpen(false)}
-                to="/signup"
+                to="/register"
                 className="py-2  my-2 px-3 w-full bg-primary text-black font-bold rounded hover:bg-secondary transition duration-300"
               >
                 Registrieren

@@ -51,12 +51,14 @@ const AuthProvider = (props: { children: ReactNode }) => {
     // Get authTokens from local storage
     let authTokens = await auth.getTokens();
 
-    if (authTokens.accessToken && authTokens.accessToken.length > 2) {
+    if (authTokens && authTokens.accessToken.length > 2) {
       if (auth.isTokenExpired(authTokens.accessToken)) {
         const newTokens = await auth.refreshTokens(authTokens.refreshToken);
-        authTokens = newTokens;
-        setAuthTokens(authTokens);
+        if (newTokens) {
+          authTokens = newTokens;
+        }
       }
+      setAuthTokens(authTokens);
 
       const data = await axios.get("/identity/me", {
         baseURL: config.apiBaseUrl,
