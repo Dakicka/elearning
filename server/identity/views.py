@@ -1,8 +1,9 @@
-from cgitb import lookup
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.views import APIView
 from .models import Account, Profile
 from .serializers import AccountSerializer, ProfileSerializer, RegistrationSerializer
 
@@ -22,15 +23,15 @@ def getRoutes(request):
     return Response(routes)
 
 
-@permission_classes((IsAuthenticated,))
-@api_view(['GET', 'PUT'])
-def me(request):
-    method = request.method
-    account_instance = Account.objects.get(id=request.user.id)
-    account_serializer = AccountSerializer(account_instance)
-    profile_instance = Profile.objects.get(account=request.user.id)
-    profile_serializer = ProfileSerializer(profile_instance)
-    if method == 'GET':
+class meView(APIView):
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request):
+        account_instance = Account.objects.get(id=request.user.id)
+        account_serializer = AccountSerializer(account_instance)
+        profile_instance = Profile.objects.get(account=request.user.id)
+        profile_serializer = ProfileSerializer(profile_instance)
         response = {
             "id": account_serializer.data["id"],
             "email": account_serializer.data["email"],
@@ -40,10 +41,19 @@ def me(request):
             "xp": 1250}
         return Response(response)
 
-    if method == 'PUT':
+    def put(self, request):
+        account_instance = Account.objects.get(id=request.user.id)
+        account_serializer = AccountSerializer(account_instance)
+        profile_instance = Profile.objects.get(account=request.user.id)
+        profile_serializer = ProfileSerializer(profile_instance)
         profile_serializer.update(profile_instance, request.data)
-        return Response({"account": account_serializer.data, "profile": profile_serializer.data})
-    # return Response(profile_serializer.data + account_serializer.data)
+        return Response({
+            "id": account_serializer.data["id"],
+            "email": account_serializer.data["email"],
+            "name": profile_serializer.data["name"],
+            "avatar": profile_serializer.data["avatar"],
+            "grade": profile_serializer.data["grade"],
+            "xp": 1250})
 
 
 @api_view(['POST'])

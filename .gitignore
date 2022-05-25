@@ -32,3 +32,4 @@ dist-ssr
 
 # Python virtual env
 server/venv
+server/media

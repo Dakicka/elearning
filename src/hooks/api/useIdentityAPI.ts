@@ -1,24 +1,25 @@
 import useAxios from "../../utils/useAxios";
 
-const apiClient = useAxios()
-import { useQuery  } from "react-query"
+import { useMutation  } from "react-query"
 import {User} from '../../models/User'
+import { useEffect } from "react";
 
-const useUpdateUserAPI = () => {
-    return useQuery(
-        "me",
-        async () => {
-          return await apiClient.put<User>("identity/me")
-        },
-        {
-          onSuccess: (res) => {console.log(res)
-          },
-          onError: (err) => {console.log(err)
-          },
-        }
-      );
+const useUserMutationAPI = <MutationData>() => {
+  const apiClient = useAxios()
+
+  const mutation = useMutation<User,unknown,MutationData,unknown>((UserMutationData)=>
+    apiClient.put("/identity/me",UserMutationData,{headers: {
+      "Content-Type": "multipart/form-data"
+    }})
+  )
+  
+  useEffect(()=>{
+    if(mutation.isSuccess){
+      window.location.reload();
+    }
+  })
  
-
+  return {update: mutation}
 }
 
-export {useUpdateUserAPI}
+export {useUserMutationAPI}

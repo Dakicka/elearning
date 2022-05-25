@@ -2,33 +2,29 @@ import { useForm } from "react-hook-form";
 import { FormContainer } from "../components/FormElements";
 import FullPageSpinner from "../components/FullPageSpinner";
 import { useAuth } from "../contexts/AuthContext";
+import { useUserMutationAPI } from "../hooks/api/useIdentityAPI";
 
 interface FormData {
   grade: number;
-  avatarId: string;
-}
-
-interface FormDataAvatar {
-  avatarFile: FileList;
+  avatar: FileList;
+  name: string;
 }
 
 function Profile() {
   const { user } = useAuth();
-
+  const userMutation = useUserMutationAPI();
   const {
     register,
     handleSubmit,
     formState: { errors, isDirty },
   } = useForm<FormData>({ mode: "onSubmit" });
 
-  const {
-    register: registerAvatar,
-    handleSubmit: handleAvatarUpload,
-    formState: avatarFormState,
-  } = useForm<FormDataAvatar>({ mode: "onSubmit" });
-
-  const onSubmit = handleSubmit(async ({ grade }) => {
-    // TODO: handle submit
+  const onSubmit = handleSubmit(async (formData) => {
+    const mutationFormData = {
+      ...formData,
+      avatar: formData.avatar[0],
+    };
+    userMutation.update.mutate(mutationFormData);
   });
 
   if (!user) {
@@ -66,11 +62,11 @@ function Profile() {
               </h4>
               <br />
               <div className="grid grid-cols-2 justify-items-center items-center">
-                <img src={user?.avatar} alt="Avatar" />
+                <img src={`server/${user.avatar}`} alt="Avatar" />
                 <label>
                   <input
                     type="file"
-                    {...registerAvatar("avatarFile")}
+                    {...register("avatar")}
                     style={{ display: "none" }}
                   />
                   <a>Ändern</a>
@@ -89,6 +85,16 @@ function Profile() {
                 type="number"
                 className="w-full p-2 border border-gray-300 rounded mt-1 text-black"
                 defaultValue={user.grade}
+              />
+              <div className="divider"></div>
+              <label className="text-sm font-bold block mt-5">
+                Wie heißt du?
+              </label>
+              <input
+                {...register("name")}
+                type="text"
+                className="w-full p-2 border border-gray-300 rounded mt-1 text-black"
+                defaultValue={user.name}
               />
             </FormContainer>
 

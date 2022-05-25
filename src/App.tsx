@@ -1,4 +1,11 @@
-import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import NewNavbar from "./components/NewNavbar";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -28,54 +35,56 @@ function App() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="register" element={<Signup />} />
-            <Route path="login" element={<Login />} />
-            {/* Private routes */}
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="register" element={<Signup />} />
+              <Route path="login" element={<Login />} />
+              {/* Private routes */}
+              <Route
+                path="courses"
+                element={
+                  <RequireAuth>
+                    <Courses />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="courses/:courseId"
+                element={
+                  <RequireAuth>
+                    <Lectures />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="lectures/:lectureId"
+                element={
+                  <RequireAuth>
+                    <Lecture />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="profile"
+                element={
+                  <RequireAuth>
+                    <Profile />
+                  </RequireAuth>
+                }
+              />
+            </Route>
+            {/* Error Routes */}
+            <Route path="*" element={<FullPageError404 />} />
             <Route
-              path="courses"
+              path="error"
               element={
-                <RequireAuth>
-                  <Courses />
-                </RequireAuth>
+                <FullPageErrorFallback error={Error("Test error message")} />
               }
             />
-            <Route
-              path="courses/:courseId"
-              element={
-                <RequireAuth>
-                  <Lectures />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="lectures/:lectureId"
-              element={
-                <RequireAuth>
-                  <Lecture />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="profile"
-              element={
-                <RequireAuth>
-                  <Profile />
-                </RequireAuth>
-              }
-            />
-          </Route>
-          {/* Error Routes */}
-          <Route path="*" element={<FullPageError404 />} />
-          <Route
-            path="error"
-            element={
-              <FullPageErrorFallback error={Error("Test error message")} />
-            }
-          />
-        </Routes>
+          </Routes>
+        </BrowserRouter>
       </QueryClientProvider>
     </AuthProvider>
   );
