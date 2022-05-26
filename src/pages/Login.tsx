@@ -6,6 +6,7 @@ import { Alert } from "../components/Alert";
 import { Link, useNavigate } from "react-router-dom";
 import { SubmitButton } from "../components/Button";
 import { LoginRegisterForm } from "../AuthProvider";
+import { useEffect } from "react";
 
 function Login() {
   const navigate = useNavigate();
@@ -21,8 +22,12 @@ function Login() {
   const onSubmit = handleSubmit(({ email, password }) =>
     run(login({ email, password }))
   );
-  console.log(isSuccess);
-  isSuccess && navigate("/", { replace: true });
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate("/", { replace: true });
+    }
+  }, [isSuccess]);
 
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col md:justify-center p-5">

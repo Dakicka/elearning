@@ -43,29 +43,66 @@ const AuthProvider = (props: { children: ReactNode }) => {
     run,
     setData,
   } = useAsync<User>();
-
+  /* 
   const bootstrapAppData = async () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let user: User = null!;
 
     // Get authTokens from local storage
-    let authTokens = await auth.getTokens();
+    let localAuthTokens = await auth.getTokens();
 
-    if (authTokens && authTokens.accessToken.length > 2) {
-      if (auth.isTokenExpired(authTokens.accessToken)) {
-        const newTokens = await auth.refreshTokens(authTokens.refreshToken);
+    if (localAuthTokens && localAuthTokens.accessToken.length > 2) {
+      if (auth.isTokenExpired(localAuthTokens.accessToken)) {
+        const newTokens = await auth.refreshTokens(
+          localAuthTokens.refreshToken
+        );
         if (newTokens) {
-          authTokens = newTokens;
+          localAuthTokens = newTokens;
         }
       }
-      setAuthTokens(authTokens);
+      setAuthTokens(localAuthTokens);
 
       const data = await axios.get("/identity/me", {
         baseURL: config.apiBaseUrl,
-        headers: { Authorization: `Bearer ${authTokens.accessToken}` },
+        headers: { Authorization: `Bearer ${localAuthTokens?.accessToken}` },
       });
       user = data.data;
     }
+    return user;
+  }; */
+  const bootstrapAppData = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    let user: User = null!;
+    const localStorageAuthTokens = auth.getTokens();
+
+    if (
+      localStorageAuthTokens &&
+      localStorageAuthTokens.accessToken.length > 2
+    ) {
+      axios.interceptors.request.use(async (req) => {
+        if (!auth.isTokenExpired(localStorageAuthTokens?.accessToken)) {
+          return req;
+        }
+        const newAuthTokens = await auth.refreshTokens(
+          localStorageAuthTokens.refreshToken
+        );
+        setAuthTokens(newAuthTokens);
+        req.headers = {
+          Authorization: `Bearer ${newAuthTokens?.accessToken}`,
+        };
+
+        return req;
+      });
+      const data = await axios.get("/identity/me", {
+        baseURL: config.apiBaseUrl,
+        headers: {
+          Authorization: `Bearer ${localStorageAuthTokens?.accessToken}`,
+        },
+      });
+
+      user = data.data;
+    }
+
     return user;
   };
 
@@ -77,16 +114,24 @@ const AuthProvider = (props: { children: ReactNode }) => {
 
   const login = useCallback(
     (form: auth.LoginRegisterForm) =>
-      // login user (create session)
-      auth.login(form).then(() => {
-        const appDataPromise = bootstrapAppData();
-        run(appDataPromise);
+      auth.login(form).then((res) => {
+        setAuthTokens({
+          accessToken: res.accessToken,
+          refreshToken: res.refreshToken,
+        }),
+          setData(res);
       }),
     [setData]
   );
   const register = useCallback(
     (form: auth.LoginRegisterForm) =>
-      auth.register(form).then((user) => setData(user)),
+      auth.register(form).then((res) => {
+        setAuthTokens({
+          accessToken: res.accessToken,
+          refreshToken: res.refreshToken,
+        }),
+          setData(res);
+      }),
     [setData]
   );
 

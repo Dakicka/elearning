@@ -10,7 +10,7 @@ const useFetchCoursesAPI = () => {
     return useQuery(
         "courses",
         async () => {
-          return await apiClient.get<Course[]>("courses");
+          return await apiClient.get<Course[]>("courses/");
         },
         /* {
           onSuccess: (res) => {console.log(res)

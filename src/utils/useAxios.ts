@@ -7,10 +7,8 @@ import { config } from './config'
 
 const API_BASE_URL = config.apiBaseUrl
 
-
-
 const useAxios = () => {
-    const {authTokens} = useContext(AuthContext)
+    const {authTokens, setAuthTokens} = useContext(AuthContext)
     const axiosClient = axios.create({
         baseURL: API_BASE_URL,
         headers: {Authorization: `Bearer ${authTokens?.accessToken}`}
@@ -23,7 +21,7 @@ const useAxios = () => {
                 return req
             }
             const newAuthTokens = await refreshTokens(authTokens.refreshToken)
-
+            setAuthTokens(newAuthTokens)
             req.headers = {Authorization: `Bearer ${newAuthTokens?.accessToken}`}
             console.log("refreshed the access token")
             return req

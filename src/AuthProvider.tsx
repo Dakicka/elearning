@@ -30,27 +30,25 @@ export const isTokenExpired = (token: string) => {
 };
 
 const refreshTokens = async (refreshToken: string) => {
-  const response = await axios
-    .post(`${API_BASE_URL}/identity/login/refresh`, {
-      refresh: refreshToken,
-    })
-    .catch(() => {
-      logout();
-      return null;
+  const response = await fetch(`${API_AUTH_URL}/identity/login/refresh`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refresh: refreshToken }),
+  })
+    .then((res) => res.json())
+    .catch((error) => {
+      throw error;
     });
-
-  if (!response) {
+  if (response.code === "token_not_valid") {
+    logout();
     return null;
   }
+
   const newAuthTokens = {
-    accessToken: response.data.access,
-    refreshToken: response.data.refresh,
+    accessToken: response.access,
+    refreshToken: response.refresh,
   };
-  window.localStorage.setItem(localStorageKey, newAuthTokens.accessToken);
-  window.localStorage.setItem(
-    localStorageKeyRefreshToken,
-    newAuthTokens.refreshToken
-  );
+  setTokens(newAuthTokens);
   return newAuthTokens;
 };
 
@@ -65,6 +63,15 @@ const getTokens = () => {
 
   return authTokens as AuthTokens;
 };
+
+const setTokens = (authTokens: AuthTokens) => {
+  window.localStorage.setItem(localStorageKey, authTokens.accessToken);
+  window.localStorage.setItem(
+    localStorageKeyRefreshToken,
+    authTokens.refreshToken
+  );
+};
+
 const handleUserResponse = ({
   id,
   email,
@@ -154,6 +161,7 @@ const client = <ClientData,>(
 
 export {
   getTokens,
+  setTokens,
   login,
   logout,
   register,

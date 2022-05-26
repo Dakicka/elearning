@@ -6,6 +6,7 @@ import { Alert } from "../components/Alert";
 import { useAsync } from "../hooks/useAsync";
 import { SubmitButton } from "../components/Button";
 import { LoginRegisterForm } from "../AuthProvider";
+import { useEffect } from "react";
 
 function Signup() {
   const {
@@ -21,7 +22,11 @@ function Signup() {
   const onSubmit = handleSubmit(({ email, password }) => {
     run(register({ email, password }));
   });
-  isSuccess && navigate("/", { replace: true });
+  useEffect(() => {
+    if (isSuccess) {
+      navigate("/", { replace: true });
+    }
+  }, [isSuccess]);
 
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col md:justify-center p-5">
