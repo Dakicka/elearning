@@ -1,5 +1,5 @@
 import { Alert } from "./Alert";
-
+import errorMeme from "../images/errorMeme.jpg";
 interface FullPageErrorFallbackProps {
   error:
     | (Error & {
@@ -14,7 +14,7 @@ const FullPageErrorFallback = ({ error }: FullPageErrorFallbackProps) => {
       <div className="max-w-md mx-auto">
         <img
           className="py-8"
-          src={require("../images/errorMeme.jpg")}
+          src={errorMeme}
           alt="An exploding rocket and Elon Musk with one eye brow raised"
         />
         <p>

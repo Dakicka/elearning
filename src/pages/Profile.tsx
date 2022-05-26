@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FormContainer } from "../components/FormElements";
 import FullPageSpinner from "../components/FullPageSpinner";
@@ -13,6 +14,8 @@ interface FormData {
 
 function Profile() {
   const { user } = useAuth();
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string>(defaultAvatar);
   const userMutation = useUserMutationAPI();
   const {
     register,
@@ -27,6 +30,22 @@ function Profile() {
     };
     userMutation.update.mutate(mutationFormData);
   });
+
+  useEffect(() => {
+    if (user?.avatar != null) {
+      setAvatarUrl(`server/${user.avatar}`);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (avatarFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarUrl(reader.result as string);
+      };
+      reader.readAsDataURL(avatarFile);
+    }
+  }, [avatarFile]);
 
   if (!user) {
     return <FullPageSpinner />;
@@ -63,19 +82,18 @@ function Profile() {
               </h4>
               <br />
               <div className="grid grid-cols-2 justify-items-center items-center">
-                <img
-                  src={
-                    user.avatar === null
-                      ? defaultAvatar
-                      : `/server/${user.avatar}`
-                  }
-                  alt="Avatar"
-                />
+                <img src={avatarUrl} alt="Avatar" />
                 <label>
                   <input
                     type="file"
                     {...register("avatar")}
                     style={{ display: "none" }}
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file =
+                        e.target && e.target.files ? e.target.files[0] : null;
+                      file ? setAvatarFile(file) : setAvatarFile(null);
+                    }}
                   />
                   <a>Ändern</a>
                 </label>
@@ -87,7 +105,7 @@ function Profile() {
               <input
                 {...register("grade", {
                   validate: {
-                    positive: (v) => parseInt(v as unknown as string) > 0,
+                    positive: (v) => parseInt(v as unknown as string) >= 0,
                   },
                 })}
                 type="number"

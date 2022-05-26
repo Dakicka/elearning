@@ -1,4 +1,5 @@
 import { Alert } from "./Alert";
+import error404 from "../images/error404.jpg";
 
 const FullPageErrorFallback = () => {
   return (
@@ -6,7 +7,7 @@ const FullPageErrorFallback = () => {
       <div className="max-w-md mx-auto">
         <img
           className="py-8"
-          src={require("../images/404Error.jpg")}
+          src={error404}
           alt="A car flying around the earth in space"
         />
         <p>Uh oh... You took the wrong turn!.</p>
