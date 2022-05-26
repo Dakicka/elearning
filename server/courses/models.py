@@ -6,6 +6,9 @@ class Course(models.Model):
     description = models.TextField(blank=True)
     thumbnail = models.ImageField(upload_to='course_thumbnails', blank=True)
 
+    def __str__(self):
+        return self.title
+
 
 class Lecture(models.Model):
     course = models.ForeignKey(
@@ -14,3 +17,6 @@ class Lecture(models.Model):
     description = models.TextField(blank=True)
     video_url = models.URLField(blank=True)
     xp = models.IntegerField(default=20)
+
+    def __str__(self):
+        return self.title

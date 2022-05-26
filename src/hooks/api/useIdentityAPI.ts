@@ -1,14 +1,14 @@
 import useAxios from "../../utils/useAxios";
-
 import { useMutation  } from "react-query"
-import {User} from '../../models/User'
+import { Profile, User } from '../../models/User'
 import { useEffect } from "react";
+import {useQuery} from "react-query"
 
 const useUserMutationAPI = <MutationData>() => {
   const apiClient = useAxios()
 
   const mutation = useMutation<User,unknown,MutationData,unknown>((UserMutationData)=>
-    apiClient.put("/identity/me",UserMutationData,{headers: {
+    apiClient.put("/identity/me",UserMutationData,{ headers: {
       "Content-Type": "multipart/form-data"
     }})
   )
@@ -22,4 +22,23 @@ const useUserMutationAPI = <MutationData>() => {
   return {update: mutation}
 }
 
-export {useUserMutationAPI}
+const useProfileFetchAPI = () => {
+
+  const apiClient = useAxios()
+
+  return useQuery(
+    "profile",
+    async () => {
+      return await apiClient.get<Profile>("/identity/profile");
+    },
+    /* {
+      onSuccess: (res) => {console.log(res)
+      },
+      onError: (err) => {console.log(err)
+      },
+    } */
+  );
+
+}
+
+export {useUserMutationAPI, useProfileFetchAPI}

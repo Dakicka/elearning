@@ -6,3 +6,5 @@ export interface User {
     grade: number
     xp: number
 }
+
+export interface Profile extends Pick<User, "name" | "avatar" | "grade" | "xp"> {}

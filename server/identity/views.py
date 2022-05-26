@@ -25,6 +25,27 @@ def getRoutes(request):
     return Response(routes)
 
 
+class profileView(APIView):
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request):
+        account_instance = Account.objects.get(id=request.user.id)
+        account_serializer = AccountSerializer(account_instance)
+        profile_instance = Profile.objects.get(account=request.user.id)
+        profile_serializer = ProfileSerializer(profile_instance)
+        xp = WatchedLectures.objects.filter(
+            account=request.user.id).aggregate(Sum('xp'))
+        response = {
+            "id": account_serializer.data["id"],
+            "email": account_serializer.data["email"],
+            "name": profile_serializer.data["name"],
+            "avatar": profile_serializer.data["avatar"],
+            "grade": profile_serializer.data["grade"],
+            "xp": xp.get('xp__sum')}
+        return Response(response)
+
+
 class meView(APIView):
     permission_classes = (IsAuthenticated,)
     parser_classes = (MultiPartParser, FormParser)

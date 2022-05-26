@@ -9,9 +9,14 @@ const API_BASE_URL = config.apiBaseUrl
 
 const useAxios = () => {
     const {authTokens, setAuthTokens} = useContext(AuthContext)
+
+    const headers = {
+        "Authorization": `Bearer ${authTokens?.accessToken}`,
+        "Content-Type": "application/json"
+    }
     const axiosClient = axios.create({
         baseURL: API_BASE_URL,
-        headers: {Authorization: `Bearer ${authTokens?.accessToken}`}
+        headers
     })
 
     axiosClient.interceptors.request.use((async req => {

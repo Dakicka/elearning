@@ -3,7 +3,10 @@ import { useForm } from "react-hook-form";
 import { FormContainer } from "../components/FormElements";
 import FullPageSpinner from "../components/FullPageSpinner";
 import { useAuth } from "../contexts/AuthContext";
-import { useUserMutationAPI } from "../hooks/api/useIdentityAPI";
+import {
+  useUserMutationAPI,
+  useProfileFetchAPI,
+} from "../hooks/api/useIdentityAPI";
 import defaultAvatar from "../images/defaultAvatar.jpg";
 
 interface FormData {
@@ -17,6 +20,7 @@ function Profile() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string>(defaultAvatar);
   const userMutation = useUserMutationAPI();
+  const { data: profile } = useProfileFetchAPI();
   const {
     register,
     handleSubmit,
@@ -32,10 +36,10 @@ function Profile() {
   });
 
   useEffect(() => {
-    if (user?.avatar != null) {
-      setAvatarUrl(`server/${user.avatar}`);
+    if (profile?.data?.avatar != null) {
+      setAvatarUrl(`server/${profile?.data?.avatar}`);
     }
-  }, [user]);
+  }, [profile]);
 
   useEffect(() => {
     if (avatarFile) {
@@ -47,7 +51,7 @@ function Profile() {
     }
   }, [avatarFile]);
 
-  if (!user) {
+  if (!profile) {
     return <FullPageSpinner />;
   }
 
@@ -64,13 +68,18 @@ function Profile() {
           </div>
         </div>
         <div className="max-w-md w-full-md mx-auto px-5 my-5">
-          <p className="text-center">Level: {Math.floor(1 + user.xp / 1000)}</p>
+          <p className="text-center">
+            Level:{" "}
+            {profile?.data?.xp ? Math.floor(1 + profile?.data?.xp / 1000) : 1}
+          </p>
           <progress
             className="progress progress-secondary"
-            value={(user.xp % 1000) / 1000}
+            value={profile?.data?.xp ? (profile?.data?.xp % 1000) / 1000 : 0}
             max="1"
           ></progress>
-          <p className="text-center">XP: {user.xp != null ? user.xp : 0}</p>
+          <p className="text-center">
+            XP: {profile?.data?.xp != null ? profile?.data?.xp : 0}
+          </p>
         </div>
       </div>
       <div className="md:col-span-2 p-4 pt-0">
@@ -110,7 +119,7 @@ function Profile() {
                 })}
                 type="number"
                 className="w-full p-2 border border-gray-300 rounded mt-1 text-black"
-                defaultValue={user.grade}
+                defaultValue={profile?.data?.grade}
               />
               <div className="divider"></div>
               <label className="text-sm font-bold block mt-5">
@@ -120,7 +129,7 @@ function Profile() {
                 {...register("name")}
                 type="text"
                 className="w-full p-2 border border-gray-300 rounded mt-1 text-black"
-                defaultValue={user.name}
+                defaultValue={profile?.data?.name}
               />
             </FormContainer>
 

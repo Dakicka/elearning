@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Course, Lecture } from "../models/Course";
 
@@ -8,7 +7,11 @@ export const CourseCard: React.FC<{ course: Course }> = ({ course }) => {
   return (
     <div className="card w-80 lg:w-96 bg-base-100 shadow-xl h-full">
       <figure>
-        <img src={course.thumbnail} alt="class topic picture" />
+        <img
+          className="w-full h-48"
+          src={course.thumbnail}
+          alt="class topic picture"
+        />
       </figure>
       <div className="card-body">
         <h2 className="card-title">{course.title}</h2>

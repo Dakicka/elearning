@@ -18,15 +18,15 @@ import Profile from "./pages/Profile";
 import Signup from "./pages/Signup";
 import FullPageError404 from "./components/FullPageError404";
 import FullPageErrorFallback from "./components/FullPageErrorFallback";
+import { ReactQueryDevtools } from "react-query/devtools";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      retry: false,
-      staleTime: 5 * 60 * 1000,
+      refetchOnMount: true,
+      refetchOnReconnect: true,
+      retry: true,
     },
   },
 });
@@ -85,6 +85,7 @@ function App() {
             />
           </Routes>
         </BrowserRouter>
+        {/*  <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </AuthProvider>
   );
