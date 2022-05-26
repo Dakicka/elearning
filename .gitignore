@@ -23,9 +23,13 @@ dist-ssr
 *.sln
 *.sw?
 
+# Sqlite database
+**/db.sqlite3
+
 
 # Enviroment files
 .env
 
 # Python virtual env
 server/venv
+server/media

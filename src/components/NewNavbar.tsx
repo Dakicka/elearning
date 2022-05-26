@@ -1,40 +1,14 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import { MdSchool } from "react-icons/md";
 import { Link, useNavigate, NavLink } from "react-router-dom";
-import { api, AppwriteProfile } from "../api/api";
 import { useAuth } from "../contexts/AuthContext";
+import defaultAvatar from "../images/defaultAvatar.jpg";
 
 function NewNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
-  const [profile, setProfile] = useState<AppwriteProfile>(null!);
-  const [avatar, setAvatar] = useState<string>("");
+
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user?.$id) {
-      api.getProfile(user.$id).then((res) => setProfile(res.documents[0]));
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (profile != null && profile.avatarId != null) {
-      api.getUserAvatar(profile.avatarId).then((res) => setAvatar(res));
-    }
-    if (user && profile == null) {
-      api.getUserAvatarInitials(user?.name).then((res) => setAvatar(res));
-    }
-  }, [profile, user]);
-
-  useEffect(() => {
-    if (
-      profile != null &&
-      (profile.avatarId === "" || profile.avatarId === null) &&
-      user
-    ) {
-      api.getUserAvatarInitials(user?.name).then((res) => setAvatar(res));
-    }
-  }, [profile]);
 
   const onLogout = () => {
     logout();
@@ -105,7 +79,14 @@ function NewNavbar() {
             <div className="flex items-center">
               <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                 <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                  <img src={avatar} onClick={() => setIsOpen(!isOpen)} />
+                  <img
+                    src={
+                      user.avatar === null
+                        ? defaultAvatar
+                        : `/server/${user.avatar}`
+                    }
+                    onClick={() => setIsOpen(!isOpen)}
+                  />
                 </div>
               </label>
             </div>
@@ -128,7 +109,7 @@ function NewNavbar() {
                 Profil
               </MobileNavigationMenuItem>
               <MobileNavigationMenuItem
-                to="/classes"
+                to="/courses"
                 toggleMenu={() => setIsOpen(false)}
               >
                 Kurse
@@ -153,7 +134,7 @@ function NewNavbar() {
               </NavLink>
               <Link
                 onClick={() => setIsOpen(false)}
-                to="/signup"
+                to="/register"
                 className="py-2  my-2 px-3 w-full bg-primary text-black font-bold rounded hover:bg-secondary transition duration-300"
               >
                 Registrieren

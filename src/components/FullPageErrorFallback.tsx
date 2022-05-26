@@ -1,11 +1,11 @@
-import { Alert } from "./Alert"
-
+import { Alert } from "./Alert";
+import errorMeme from "../images/errorMeme.jpg";
 interface FullPageErrorFallbackProps {
   error:
     | (Error & {
-        statusCode?: number | undefined
+        statusCode?: number | undefined;
       })
-    | null
+    | null;
 }
 
 const FullPageErrorFallback = ({ error }: FullPageErrorFallbackProps) => {
@@ -14,7 +14,7 @@ const FullPageErrorFallback = ({ error }: FullPageErrorFallbackProps) => {
       <div className="max-w-md mx-auto">
         <img
           className="py-8"
-          src={require("../images/errorMeme.jpg")}
+          src={errorMeme}
           alt="An exploding rocket and Elon Musk with one eye brow raised"
         />
         <p>
@@ -27,7 +27,7 @@ const FullPageErrorFallback = ({ error }: FullPageErrorFallbackProps) => {
         <pre></pre>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FullPageErrorFallback
+export default FullPageErrorFallback;

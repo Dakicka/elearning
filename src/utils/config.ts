@@ -1,8 +1,5 @@
-export const appwriteServer = {
-    endpoint: import.meta.env.VITE_APPWRITE_API_ENDPOINT,
-    project: import.meta.env.VITE_APPWRITE_PROJECT_ID,
-    collections: {
-        classes: import.meta.env.VITE_APPWRITE_COLLECTION_CLASSES,
-        profiles: import.meta.env.VITE_APPWRITE_COLLECTION_PROFILES
-    }
+export const config = {
+    apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
+    localStorageKeyAccessToken: "__auth_provider_token__",
+    localStorageKeyRefreshToken: "__auth_provider_refreshtoken__",
 }

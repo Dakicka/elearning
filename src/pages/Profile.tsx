@@ -1,116 +1,60 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { api, AppwriteProfile } from "../api/api";
 import { FormContainer } from "../components/FormElements";
 import FullPageSpinner from "../components/FullPageSpinner";
 import { useAuth } from "../contexts/AuthContext";
+import {
+  useUserMutationAPI,
+  useProfileFetchAPI,
+} from "../hooks/api/useIdentityAPI";
+import defaultAvatar from "../images/defaultAvatar.jpg";
 
 interface FormData {
   grade: number;
-  avatarId: string;
-}
-
-interface FormDataAvatar {
-  avatarFile: FileList;
+  avatar: FileList;
+  name: string;
 }
 
 function Profile() {
-  const [profile, setProfile] = useState<AppwriteProfile>(null!);
-  const [avatar, setAvatar] = useState<string>("");
-  const [profileIsLoading, setProfileIsLoading] = useState(true);
-  const [avatarIsLoading, setAvatarIsLoading] = useState(true);
-  const [xp, setXp] = useState(0);
-
   const { user } = useAuth();
-
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string>(defaultAvatar);
+  const userMutation = useUserMutationAPI();
+  const { data: profile } = useProfileFetchAPI();
   const {
     register,
     handleSubmit,
     formState: { errors, isDirty },
   } = useForm<FormData>({ mode: "onSubmit" });
 
-  const {
-    register: registerAvatar,
-    handleSubmit: handleAvatarUpload,
-    formState: avatarFormState,
-  } = useForm<FormDataAvatar>({ mode: "onSubmit" });
-
-  useEffect(() => {
-    console.log("avatarFormState", avatarFormState.isDirty);
-  }, [avatarFormState.isDirty]);
-
-  // Get user profile
-  useEffect(() => {
-    if (user) {
-      api
-        .getProfile(user.$id)
-        .then((res) => setProfile(res.documents[0]))
-        .then(() => setProfileIsLoading(false));
-    }
-  }, [user]);
-
-  // get user avatar
-  useEffect(() => {
-    if (profile != null && profile.avatarId != null && user) {
-      setAvatarIsLoading(true);
-      api
-        .getUserAvatar(profile.avatarId)
-        .then((res) => setAvatar(res))
-        .then(() => setAvatarIsLoading(false));
-    } else if (user) {
-      api
-        .getUserAvatarInitials(user?.name)
-        .then((res) => setAvatar(res))
-        .then(() => setAvatarIsLoading(false));
-    }
-  }, [user, profile]);
-
-  // get user xp
-  useEffect(() => {
-    user && api.getUserXp(user.$id).then((res) => setXp(res));
-  }, [user]);
-
-  const uploadAvatar = handleAvatarUpload(async ({ avatarFile }) => {
-    if (profile.avatarId != null && profile.avatarId != "") {
-      const updateResponse = await api.updateAvatar(
-        avatarFile[0],
-        profile.avatarId
-      );
-      api
-        .updateProfile(profile?.$id, { avatarId: updateResponse })
-        .then((res) => {
-          setProfile(res);
-        })
-        .then(() => location.reload());
-    } else {
-      const updateResponse = await api.uploadFile(avatarFile[0]);
-      api
-        .updateProfile(profile?.$id, { avatarId: updateResponse })
-        .then((res) => {
-          setProfile(res);
-        });
-    }
+  const onSubmit = handleSubmit(async (formData) => {
+    const mutationFormData = {
+      ...formData,
+      avatar: formData.avatar[0],
+    };
+    userMutation.update.mutate(mutationFormData);
   });
 
-  const onSubmit = handleSubmit(async ({ grade }) => {
-    if (avatarFormState.isDirty) {
-      await uploadAvatar();
+  useEffect(() => {
+    if (profile?.data?.avatar != null) {
+      setAvatarUrl(`server/${profile?.data?.avatar}`);
     }
-    if (isDirty) {
-      api.updateProfile(profile?.$id, { grade }).then((res) => {
-        setProfile(res);
-      });
-    }
-  });
+  }, [profile]);
 
-  if (
-    profileIsLoading ||
-    avatarIsLoading ||
-    avatar === "" ||
-    profile === null
-  ) {
+  useEffect(() => {
+    if (avatarFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarUrl(reader.result as string);
+      };
+      reader.readAsDataURL(avatarFile);
+    }
+  }, [avatarFile]);
+
+  if (!profile) {
     return <FullPageSpinner />;
   }
+
   return (
     <>
       <div className=" p-4">
@@ -124,13 +68,18 @@ function Profile() {
           </div>
         </div>
         <div className="max-w-md w-full-md mx-auto px-5 my-5">
-          <p className="text-center">Level: {Math.floor(1 + xp / 1000)}</p>
+          <p className="text-center">
+            Level:{" "}
+            {profile?.data?.xp ? Math.floor(1 + profile?.data?.xp / 1000) : 1}
+          </p>
           <progress
             className="progress progress-secondary"
-            value={(xp % 1000) / 1000}
+            value={profile?.data?.xp ? (profile?.data?.xp % 1000) / 1000 : 0}
             max="1"
           ></progress>
-          <p className="text-center">XP: {xp}</p>
+          <p className="text-center">
+            XP: {profile?.data?.xp != null ? profile?.data?.xp : 0}
+          </p>
         </div>
       </div>
       <div className="md:col-span-2 p-4 pt-0">
@@ -142,12 +91,18 @@ function Profile() {
               </h4>
               <br />
               <div className="grid grid-cols-2 justify-items-center items-center">
-                <img src={avatar} alt="Avatar" />
+                <img src={avatarUrl} alt="Avatar" />
                 <label>
                   <input
                     type="file"
-                    {...registerAvatar("avatarFile")}
+                    {...register("avatar")}
                     style={{ display: "none" }}
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file =
+                        e.target && e.target.files ? e.target.files[0] : null;
+                      file ? setAvatarFile(file) : setAvatarFile(null);
+                    }}
                   />
                   <a>Ändern</a>
                 </label>
@@ -159,12 +114,22 @@ function Profile() {
               <input
                 {...register("grade", {
                   validate: {
-                    positive: (v) => parseInt(v as unknown as string) > 0,
+                    positive: (v) => parseInt(v as unknown as string) >= 0,
                   },
                 })}
                 type="number"
                 className="w-full p-2 border border-gray-300 rounded mt-1 text-black"
-                defaultValue={profile?.grade}
+                defaultValue={profile?.data?.grade}
+              />
+              <div className="divider"></div>
+              <label className="text-sm font-bold block mt-5">
+                Wie heißt du?
+              </label>
+              <input
+                {...register("name")}
+                type="text"
+                className="w-full p-2 border border-gray-300 rounded mt-1 text-black"
+                defaultValue={profile?.data?.name}
               />
             </FormContainer>
 

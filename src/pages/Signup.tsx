@@ -5,25 +5,28 @@ import { useAuth } from "../contexts/AuthContext";
 import { Alert } from "../components/Alert";
 import { useAsync } from "../hooks/useAsync";
 import { SubmitButton } from "../components/Button";
-import { SignupForm } from "../AuthProvider";
+import { LoginRegisterForm } from "../AuthProvider";
+import { useEffect } from "react";
 
 function Signup() {
   const {
-    register,
+    register: registerForm,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignupForm>({ mode: "onSubmit" });
+  } = useForm<LoginRegisterForm>({ mode: "onSubmit" });
 
   const navigate = useNavigate();
-  const { signup } = useAuth();
+  const { register } = useAuth();
   const { run, error, isLoading, isSuccess } = useAsync<any>();
 
-  const onSubmit = handleSubmit(({ email, password, name }) => {
-    run(signup({ email, password, name }));
+  const onSubmit = handleSubmit(({ email, password }) => {
+    run(register({ email, password }));
   });
-  if (isSuccess) {
-    navigate("/", { replace: true });
-  }
+  useEffect(() => {
+    if (isSuccess) {
+      navigate("/", { replace: true });
+    }
+  }, [isSuccess]);
 
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col md:justify-center p-5">
@@ -39,19 +42,7 @@ function Signup() {
             <InputText
               errors={errors}
               registerHandler={() =>
-                register("name", {
-                  required: "Bitte gib deinen Namen ein",
-                })
-              }
-              name="firstName"
-              type="text"
-            >
-              Wie heißt du?
-            </InputText>
-            <InputText
-              errors={errors}
-              registerHandler={() =>
-                register("email", {
+                registerForm("email", {
                   required: "Bitte gib deine E-Mail-Adresse ein",
                 })
               }
@@ -63,7 +54,7 @@ function Signup() {
             <InputText
               errors={errors}
               registerHandler={() =>
-                register("password", {
+                registerForm("password", {
                   required: "Bitte gib dein Passwort ein",
                 })
               }

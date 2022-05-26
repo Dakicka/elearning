@@ -5,45 +5,33 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useState,
 } from "react";
 import * as auth from "../AuthProvider";
 import { User } from "../models/User";
 import FullPageSpinner from "../components/FullPageSpinner";
 import FullPageErrorFallback from "../components/FullPageErrorFallback";
 import { useAsync } from "../hooks/useAsync";
-import { api } from "../api/api";
+import { config } from "../utils/config";
+import axios from "axios";
 
 // TODO: Add session to auth context
 
 interface AuthContextType {
   user: User | null;
-  login: (form: { email: string; password: string }) => Promise<any>;
-  signup: (form: {
-    email: string;
-    password: string;
-    name: string;
-  }) => Promise<any>;
+  login: (form: auth.LoginRegisterForm) => Promise<any>;
+  register: (form: auth.LoginRegisterForm) => Promise<any>;
   logout: () => void;
+  authTokens: auth.AuthTokens | null;
+  setAuthTokens: (authTokens: auth.AuthTokens | null) => void;
 }
 
-const bootstrapAppData = async () => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  let user: User = null!;
-
-  const userToken = await auth.getToken();
-  if (userToken && userToken != "[]") {
-    const data = await api
-      .getAccount()
-      .then((res) => (user = res))
-      .catch(() => {});
-    user = data;
-  }
-  return user;
-};
-
-let AuthContext = createContext<AuthContextType>(null!);
+export let AuthContext = createContext<AuthContextType>(null!);
 
 const AuthProvider = (props: { children: ReactNode }) => {
+  const [authTokens, setAuthTokens] = useState<auth.AuthTokens | null>(() =>
+    auth.getTokens()
+  );
   const {
     state: { data: user },
     status,
@@ -56,6 +44,40 @@ const AuthProvider = (props: { children: ReactNode }) => {
     setData,
   } = useAsync<User>();
 
+  const bootstrapAppData = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    let user: User = null!;
+    let localStorageAuthTokens = auth.getTokens();
+
+    if (
+      localStorageAuthTokens &&
+      localStorageAuthTokens.accessToken.length > 2
+    ) {
+      if (auth.isTokenExpired(localStorageAuthTokens.accessToken)) {
+        const newAuthTokens = await auth.refreshTokens(
+          localStorageAuthTokens.refreshToken
+        );
+        if (newAuthTokens) {
+          setAuthTokens(newAuthTokens);
+          localStorageAuthTokens = newAuthTokens;
+        } else {
+          auth.logout();
+        }
+      }
+
+      const data = await axios.get("/identity/me", {
+        baseURL: config.apiBaseUrl,
+        headers: {
+          Authorization: `Bearer ${localStorageAuthTokens?.accessToken}`,
+        },
+      });
+
+      user = data.data;
+    }
+
+    return user;
+  };
+
   // Get user data when initialize
   useEffect(() => {
     const appDataPromise = bootstrapAppData();
@@ -63,16 +85,25 @@ const AuthProvider = (props: { children: ReactNode }) => {
   }, [run]);
 
   const login = useCallback(
-    (form: auth.LoginForm) =>
-      // login user (create session)
-      auth.login(form).then(() => {
-        // get user data
-        api.getAccount().then((res) => setData(res));
+    (form: auth.LoginRegisterForm) =>
+      auth.login(form).then((res) => {
+        setAuthTokens({
+          accessToken: res.accessToken,
+          refreshToken: res.refreshToken,
+        }),
+          setData(res);
       }),
     [setData]
   );
-  const signup = useCallback(
-    (form: auth.SignupForm) => auth.signup(form).then((user) => setData(user)),
+  const register = useCallback(
+    (form: auth.LoginRegisterForm) =>
+      auth.register(form).then((res) => {
+        setAuthTokens({
+          accessToken: res.accessToken,
+          refreshToken: res.refreshToken,
+        }),
+          setData(res);
+      }),
     [setData]
   );
 
@@ -82,8 +113,8 @@ const AuthProvider = (props: { children: ReactNode }) => {
   }, [setData]);
 
   const value = useMemo(
-    () => ({ user, login, logout, signup }),
-    [signup, login, logout, user]
+    () => ({ user, login, logout, register, authTokens, setAuthTokens }),
+    [register, login, logout, user, authTokens]
   );
   if (isLoading || isIdle) {
     return <FullPageSpinner />;
