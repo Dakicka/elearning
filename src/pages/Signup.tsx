@@ -34,18 +34,6 @@ function Signup() {
         </div>
         <FormContainer>
           <form onSubmit={onSubmit} className="space-y-6">
-            {/*  <InputText
-              errors={errors}
-              registerHandler={() =>
-                registerForm("name", {
-                  required: "Bitte gib deinen Namen ein",
-                })
-              }
-              name="firstName"
-              type="text"
-            >
-              Wie heißt du?
-            </InputText> */}
             <InputText
               errors={errors}
               registerHandler={() =>

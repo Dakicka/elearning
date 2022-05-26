@@ -3,6 +3,7 @@ import { FormContainer } from "../components/FormElements";
 import FullPageSpinner from "../components/FullPageSpinner";
 import { useAuth } from "../contexts/AuthContext";
 import { useUserMutationAPI } from "../hooks/api/useIdentityAPI";
+import defaultAvatar from "../images/defaultAvatar.jpg";
 
 interface FormData {
   grade: number;
@@ -50,7 +51,7 @@ function Profile() {
             value={(user.xp % 1000) / 1000}
             max="1"
           ></progress>
-          <p className="text-center">XP: {user.xp}</p>
+          <p className="text-center">XP: {user.xp != null ? user.xp : 0}</p>
         </div>
       </div>
       <div className="md:col-span-2 p-4 pt-0">
@@ -62,7 +63,14 @@ function Profile() {
               </h4>
               <br />
               <div className="grid grid-cols-2 justify-items-center items-center">
-                <img src={`server/${user.avatar}`} alt="Avatar" />
+                <img
+                  src={
+                    user.avatar === null
+                      ? defaultAvatar
+                      : `/server/${user.avatar}`
+                  }
+                  alt="Avatar"
+                />
                 <label>
                   <input
                     type="file"
