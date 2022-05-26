@@ -1,9 +1,11 @@
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from django.db.models import Sum
+from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
+from gamification.models import WatchedLectures
 from .models import Account, Profile
 from .serializers import AccountSerializer, ProfileSerializer, RegistrationSerializer
 
@@ -32,16 +34,19 @@ class meView(APIView):
         account_serializer = AccountSerializer(account_instance)
         profile_instance = Profile.objects.get(account=request.user.id)
         profile_serializer = ProfileSerializer(profile_instance)
+        xp = WatchedLectures.objects.filter(
+            account=request.user.id).aggregate(Sum('xp'))
         response = {
             "id": account_serializer.data["id"],
             "email": account_serializer.data["email"],
             "name": profile_serializer.data["name"],
             "avatar": profile_serializer.data["avatar"],
             "grade": profile_serializer.data["grade"],
-            "xp": 1250}
+            "xp": xp.get('xp__sum')}
         return Response(response)
 
     def put(self, request):
+
         account_instance = Account.objects.get(id=request.user.id)
         account_serializer = AccountSerializer(account_instance)
         profile_instance = Profile.objects.get(account=request.user.id)

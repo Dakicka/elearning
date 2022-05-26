@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/courses/', include('courses.urls')),
     path('api/identity/', include('identity.urls')),
+    path('api/gamification/', include('gamification.urls')),
 ]
 
 if settings.DEBUG:

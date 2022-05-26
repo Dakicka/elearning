@@ -1,12 +1,13 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import { MdSchool } from "react-icons/md";
-import { Link, useNavigate, NavLink, useLocation } from "react-router-dom";
+import { Link, useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import defaultAvatar from "../images/defaultAvatar.jpg";
 
 function NewNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
-  const location = useLocation();
+
   const navigate = useNavigate();
 
   const onLogout = () => {
@@ -79,7 +80,11 @@ function NewNavbar() {
               <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                 <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                   <img
-                    src={`/server/${user.avatar}`}
+                    src={
+                      user.avatar === null
+                        ? defaultAvatar
+                        : `/server/${user.avatar}`
+                    }
                     onClick={() => setIsOpen(!isOpen)}
                   />
                 </div>

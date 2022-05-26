@@ -21,9 +21,7 @@ function Signup() {
   const onSubmit = handleSubmit(({ email, password }) => {
     run(register({ email, password }));
   });
-  if (isSuccess) {
-    navigate("/", { replace: true });
-  }
+  isSuccess && navigate("/", { replace: true });
 
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col md:justify-center p-5">

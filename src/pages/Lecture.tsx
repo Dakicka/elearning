@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { SpinnerGreenSmall } from "../components/Spinner";
 import { useAuth } from "../contexts/AuthContext";
 import { useQueryLectureAPI } from "../hooks/api/useCourseAPI";
+import { useWatchedLectureMutationAPI } from "../hooks/api/useGamificationAPI";
 
 function Lecture() {
   const { user } = useAuth();
@@ -12,9 +13,12 @@ function Lecture() {
   const { data } = useQueryLectureAPI(lectureId ? lectureId : "");
   const lecture = data?.data;
 
+  const lectureMutation = useWatchedLectureMutationAPI();
+
   const onStart = () => {
     if (user && lectureId && lecture) {
-      // TODO: Mark as watched
+      const lectureIdAsNumber = parseInt(lectureId as unknown as string);
+      lectureMutation.save.mutate({ id: lectureIdAsNumber });
     }
   };
 

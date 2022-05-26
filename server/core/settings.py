@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'courses',
     'identity',
+    'gamification',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
 ]

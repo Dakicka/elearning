@@ -21,6 +21,7 @@ function Login() {
   const onSubmit = handleSubmit(({ email, password }) =>
     run(login({ email, password }))
   );
+  console.log(isSuccess);
   isSuccess && navigate("/", { replace: true });
 
   return (
@@ -31,7 +32,7 @@ function Login() {
         </div>
         <div className="text-center font-medium text-sm mt-2 text-gray-700 mb-8">
           Hast du noch keinen Account?{" "}
-          <Link className="underline" to={"/signup"}>
+          <Link className="underline" to={"/register"}>
             Registriere
           </Link>{" "}
           dich kostenlos!
