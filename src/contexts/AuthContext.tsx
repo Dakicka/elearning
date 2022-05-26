@@ -12,8 +12,8 @@ import { User } from "../models/User";
 import FullPageSpinner from "../components/FullPageSpinner";
 import FullPageErrorFallback from "../components/FullPageErrorFallback";
 import { useAsync } from "../hooks/useAsync";
-import axiosClient from "../utils/axiosClient";
 import { config } from "../utils/config";
+import axios from "axios";
 
 // TODO: Add session to auth context
 
@@ -47,13 +47,25 @@ const AuthProvider = (props: { children: ReactNode }) => {
   const bootstrapAppData = async () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let user: User = null!;
-    const localStorageAuthTokens = auth.getTokens();
+    let localStorageAuthTokens = auth.getTokens();
 
     if (
       localStorageAuthTokens &&
       localStorageAuthTokens.accessToken.length > 2
     ) {
-      const data = await axiosClient.get("/identity/me", {
+      if (auth.isTokenExpired(localStorageAuthTokens.accessToken)) {
+        const newAuthTokens = await auth.refreshTokens(
+          localStorageAuthTokens.refreshToken
+        );
+        if (newAuthTokens) {
+          setAuthTokens(newAuthTokens);
+          localStorageAuthTokens = newAuthTokens;
+        } else {
+          auth.logout();
+        }
+      }
+
+      const data = await axios.get("/identity/me", {
         baseURL: config.apiBaseUrl,
         headers: {
           Authorization: `Bearer ${localStorageAuthTokens?.accessToken}`,
