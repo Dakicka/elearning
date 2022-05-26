@@ -12,7 +12,7 @@ import { User } from "../models/User";
 import FullPageSpinner from "../components/FullPageSpinner";
 import FullPageErrorFallback from "../components/FullPageErrorFallback";
 import { useAsync } from "../hooks/useAsync";
-import axios from "axios";
+import axiosClient from "../utils/axiosClient";
 import { config } from "../utils/config";
 
 // TODO: Add session to auth context
@@ -43,33 +43,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     run,
     setData,
   } = useAsync<User>();
-  /* 
-  const bootstrapAppData = async () => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    let user: User = null!;
 
-    // Get authTokens from local storage
-    let localAuthTokens = await auth.getTokens();
-
-    if (localAuthTokens && localAuthTokens.accessToken.length > 2) {
-      if (auth.isTokenExpired(localAuthTokens.accessToken)) {
-        const newTokens = await auth.refreshTokens(
-          localAuthTokens.refreshToken
-        );
-        if (newTokens) {
-          localAuthTokens = newTokens;
-        }
-      }
-      setAuthTokens(localAuthTokens);
-
-      const data = await axios.get("/identity/me", {
-        baseURL: config.apiBaseUrl,
-        headers: { Authorization: `Bearer ${localAuthTokens?.accessToken}` },
-      });
-      user = data.data;
-    }
-    return user;
-  }; */
   const bootstrapAppData = async () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let user: User = null!;
@@ -79,21 +53,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
       localStorageAuthTokens &&
       localStorageAuthTokens.accessToken.length > 2
     ) {
-      axios.interceptors.request.use(async (req) => {
-        if (!auth.isTokenExpired(localStorageAuthTokens?.accessToken)) {
-          return req;
-        }
-        const newAuthTokens = await auth.refreshTokens(
-          localStorageAuthTokens.refreshToken
-        );
-        setAuthTokens(newAuthTokens);
-        req.headers = {
-          Authorization: `Bearer ${newAuthTokens?.accessToken}`,
-        };
-
-        return req;
-      });
-      const data = await axios.get("/identity/me", {
+      const data = await axiosClient.get("/identity/me", {
         baseURL: config.apiBaseUrl,
         headers: {
           Authorization: `Bearer ${localStorageAuthTokens?.accessToken}`,
